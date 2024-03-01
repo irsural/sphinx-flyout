@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 def setup(app: Sphinx) -> None:
-    app.add_config_value("sphinx_flyout_host", None, "html", str)
     app.add_config_value("sphinx_flyout_current_version", "", "html", None)
+    app.add_config_value("sphinx_flyout_host", "", "html", str)
     app.add_config_value("sphinx_flyout_repository_link", "", "html", str)
     app.add_config_value("sphinx_flyout_tags", [], "html", list)
     app.add_config_value("sphinx_flyout_branches", [], "html", list)
@@ -23,7 +23,7 @@ def setup(app: Sphinx) -> None:
 
 
 def _check_config_values(app: Sphinx) -> None:
-    if app.config.sphinx_flyout_host is None:
+    if not app.config.sphinx_flyout_host:
         raise ConfigError("Обязательный параметр sphinx_flyout_host не установлен")
 
 
