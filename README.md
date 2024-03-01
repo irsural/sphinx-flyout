@@ -23,48 +23,52 @@ extensions = [
 
 ### Настройка
 
-У расширения есть 6 параметров, задаваемых переменными в **conf.py**.
-
-#### ``sphinx_flyout_current_version``
-
-Строковое значение версии в меню. По умолчанию - `1.0`
+У расширения есть 5 параметров, задаваемых переменными в **conf.py**.
 
 #### ``sphinx_flyout_header``
 
-Заголовок меню. По умолчанию - "Flyout"
+Заголовок меню. По умолчанию - название проекта **Sphinx**
 
-#### ``sphinx_flyout_gitea``
+#### ``sphinx_flyout_repository_link``
 
-Словарь структуры `{текст1: ссылка1, текст2: ссылка2, ...}` 
-со ссылками на репозиторий проекта. По умолчанию пуст, 
-а раздел **Gitea** не отображается 
+Строка со ссылкой на репозиторий проекта. По умолчанию пустая,
+а раздел **Репозиторий** не отображается
 
 #### ``sphinx_flyout_host``
 
 Ссылка на хостинг сайта. Автоматически вставляется в нижеупомянутые ссылки. 
-По умолчанию - `http://0.0.0.0:8000`
+Обязательный параметр
 
 #### ``sphinx_flyout_downloads``
 
-Словарь структуры `{текст1: ссылка1, текст2: ссылка2, ...}`
-со ссылками на загрузки проекта.
+Список с форматами документации проекта, доступными для загрузки 
+(`html`, `pdf` и т.д.) .
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`{текст1: sphinx_flyout_host / download / ссылка1, текст2: sphinx_flyout_host / download / ссылка2, ...}`
+`html: sphinx_flyout_host / download / html`
 
-По умолчанию пуст, а раздел **Downloads** не отображается
+По умолчанию пуст, а раздел **Загрузки** не отображается
 
-#### ``sphinx_flyout_versions``
+#### ``sphinx_flyout_branches``
 
-Словарь структуры `{текст1: ссылка1, текст2: ссылка2, ...}`
-со ссылками на версии проекта.
+Список с названиями собранных веток проекта.
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`{текст1: sphinx_flyout_host / ver / ссылка1, текст2: sphinx_flyout_host / ver / ссылка2, ...}`
+`ветка1: sphinx_flyout_host / branch / ветка1`
 
-По умолчанию пуст, а раздел **Versions** не отображается
+По умолчанию пуст, а раздел **Ветки** не отображается
+
+#### ``sphinx_flyout_tags``
+
+Список с названиями собранных тэгов проекта.
+
+Во время работы расширения ссылки автоматически преобразуются в следующий формат:
+
+`ветка1: sphinx_flyout_host / tag / ветка1`
+
+По умолчанию пуст, а раздел **Тэги** не отображается
 
 ## Пример
 
@@ -72,26 +76,23 @@ extensions = [
 ```python
 sphinx_flyout_current_version = "1.0"
 sphinx_flyout_header = "My project"
-sphinx_flyout_gitea = {
-    "Gitea": "https://gitea.example.com/my/project"
-}
+sphinx_flyout_repository_link = "https://gitea.example.com/my/project"
+
 sphinx_flyout_host = "https://example.com"
-sphinx_flyout_downloads = {
-    "Download 1": "download1.zip",
-    "Download 2": "download2.zip"
-}
-sphinx_flyout_versions = {
-    "Version 1": "1.0",
-    "Version 2": "2.0"
-}
+sphinx_flyout_downloads = ["html", "pdf"]
+
+sphinx_flyout_tags = ["t2", "release"]
+sphinx_flyout_branches = ["b1", "master"]
 ```
 
 Вид сгенерированного меню:
 
 ![flyout](docs/images/menu.png)
 
-Ссылка **Gitea** ведёт на `https://gitea.example.com/my/project`
+Ссылки **Тэги** ведут на `https://example.com/tag/t2` и `https://example.com/tag/release`
 
-Ссылки **Versions** ведут на `https://example.com/ver/1.0` и `https://example.com/ver/2.0`
+Ссылки **Ветки** ведут на `https://example.com/branch/b1` и `https://example.com/branch/master`
 
-Ссылки **Downloads** ведут на `https://example.com/download/download1.zip` и `https://example.com/download/download2.zip`
+Ссылки **Загрузки** ведут на `https://example.com/download/html` и `https://example.com/download/pdf`
+
+Ссылка **Посмотреть** ведёт на `https://gitea.example.com/my/project`
