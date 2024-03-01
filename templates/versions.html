@@ -5,28 +5,34 @@
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
-      {% if versions %}
+      {% if tags %}
       <dl>
-        <dt>Versions</dt>
-        {% for slug, url in versions.items() %}
+        <dt>Тэги</dt>
+        {% for slug, url in tags.items() %}
+          <dd><a href="{{ url }}">{{ slug }}</a></dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      {% if branches %}
+      <dl>
+        <dt>Ветки</dt>
+        {% for slug, url in branches.items() %}
           <dd><a href="{{ url }}">{{ slug }}</a></dd>
         {% endfor %}
       </dl>
       {% endif %}
       {% if downloads %}
       <dl>
-        <dt>Downloads</dt>
+        <dt>Загрузки</dt>
         {% for slug, url in downloads.items() %}
           <dd><a href="{{ url }}">{{ slug }}</a></dd>
         {% endfor %}
       </dl>
       {% endif %}
-      {% if gitea %}
+      {% if repository_link %}
       <dl>
-        <dt>Gitea</dt>
-        {% for slug, url in gitea.items() %}
-          <dd><a href="{{ url }}">{{ slug }}</a></dd>
-        {% endfor %}
+        <dt>Репозиторий</dt>
+          <dd><a href="{{ repository_link }}">Посмотреть</a></dd>
       </dl>
       {% endif %}
    </div>
