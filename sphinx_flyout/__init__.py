@@ -3,6 +3,7 @@ from typing import Any
 
 from sphinx.application import Sphinx
 from sphinx.config import Config
+from sphinx.errors import ConfigError
 from sphinx.util import logging
 
 logger = logging.getLogger(__name__)
@@ -10,13 +11,19 @@ logger = logging.getLogger(__name__)
 
 def setup(app: Sphinx) -> None:
     app.add_config_value("sphinx_flyout_current_version", "1.0", "html", str)
-    app.add_config_value("sphinx_flyout_host", "http://0.0.0.0:8000", "html", str)
+    app.add_config_value("sphinx_flyout_host", None, "html", str)
     app.add_config_value("sphinx_flyout_repository_link", "", "html", str)
     app.add_config_value("sphinx_flyout_tags", [], "html", list)
     app.add_config_value("sphinx_flyout_branches", [], "html", list)
     app.add_config_value("sphinx_flyout_downloads", [], "html", list)
     app.connect("config-inited", _add_config_values)
+    app.connect('builder-inited', _check_config_values)
     app.connect("html-page-context", add_flyout_to_context)
+
+
+def _check_config_values(app: Sphinx) -> None:
+    if app.config.sphinx_flyout_host is None:
+        raise ConfigError("Обязательный параметр sphinx_flyout_host не установлен")
 
 
 def _add_config_values(app: Sphinx, config: Config) -> None:
