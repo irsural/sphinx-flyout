@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -10,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 def setup(app: Sphinx) -> None:
-    app.add_config_value("sphinx_flyout_current_version", "1.0", "html", str)
     app.add_config_value("sphinx_flyout_host", None, "html", str)
+    app.add_config_value("sphinx_flyout_current_version", "", "html", None)
     app.add_config_value("sphinx_flyout_repository_link", "", "html", str)
     app.add_config_value("sphinx_flyout_tags", [], "html", list)
     app.add_config_value("sphinx_flyout_branches", [], "html", list)
@@ -29,6 +30,20 @@ def _check_config_values(app: Sphinx) -> None:
 def _add_config_values(app: Sphinx, config: Config) -> None:
     config.templates_path.append(str(Path(__file__).parent.parent / "templates"))
     config.add("sphinx_flyout_header", app.config.project, "html", str)
+    config["sphinx_flyout_current_version"] = _get_git_branch(app)
+
+
+def _get_git_branch(app: Sphinx) -> str:
+    process = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             cwd=app.srcdir)
+    if process.returncode == 0:
+        return process.stdout.decode().strip()
+    else:
+        logger.warning("Не удалось получить имя текущей ветки git: "
+                       f"{process.stderr.decode('utf-8')}")
+        return ""
 
 
 def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
