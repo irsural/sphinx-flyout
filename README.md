@@ -89,9 +89,9 @@ sphinx_flyout_branches = ["b1", "master"]
 
 ![flyout](docs/images/menu.png)
 
-Ссылки **Тэги** ведут на `https://example.com/tag/t2` и `https://example.com/tag/release`
-
 Ссылки **Ветки** ведут на `https://example.com/branch/b1` и `https://example.com/branch/master`
+
+Ссылки **Тэги** ведут на `https://example.com/tag/t2` и `https://example.com/tag/release`
 
 Ссылки **Загрузки** ведут на `https://example.com/download/html` и `https://example.com/download/pdf`
 
