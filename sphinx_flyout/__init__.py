@@ -35,8 +35,7 @@ def _add_config_values(app: Sphinx, config: Config) -> None:
 
 def _get_git_branch(app: Sphinx) -> str:
     process = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE,
+                             capture_output=True,
                              cwd=app.srcdir)
     if process.returncode == 0:
         return process.stdout.decode().strip()
