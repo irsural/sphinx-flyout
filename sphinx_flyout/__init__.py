@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+import urllib.parse
 from sphinx.application import Sphinx
 from sphinx.config import Config
 from sphinx.errors import ConfigError
@@ -54,21 +55,22 @@ def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
     logger.info(f"Writing flyout to {pagename}")
     context["current_version"] = app.config.sphinx_flyout_current_version
     host = app.config.sphinx_flyout_host
+    project_url = urllib.parse.urlencode(app.config.sphinx_flyout_header)
     context["header"] = app.config.sphinx_flyout_header
     context["downloads"] = _make_links_relate_to_host(
-        host, 'download', app.config.sphinx_flyout_downloads
+        host, project_url, 'download', app.config.sphinx_flyout_downloads
     )
     context["repository_link"] = f"{host}/{app.config.sphinx_flyout_repository_link}"
     context["tags"] = _make_links_relate_to_host(
-        host, 'tag', app.config.sphinx_flyout_tags,
+        host, project_url, 'tag', app.config.sphinx_flyout_tags,
     )
     context["branches"] = _make_links_relate_to_host(
-        host, 'branch', app.config.sphinx_flyout_branches,
+        host, project_url, 'branch', app.config.sphinx_flyout_branches,
     )
 
 
-def _make_links_relate_to_host(host: str, section: str, links: list[str]) -> dict[str, str]:
+def _make_links_relate_to_host(host: str, project: str, section: str, links: list[str]) -> dict[str, str]:
     new_links = {}
     for link in links:
-        new_links[link] = f"{host}/{section}/{link}".lower()
+        new_links[link] = f"{host}/{project}/{section}/{link}".lower()
     return new_links
