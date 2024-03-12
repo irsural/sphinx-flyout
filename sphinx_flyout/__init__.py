@@ -29,7 +29,7 @@ def _check_config_values(app: Sphinx, config: Config) -> None:
 
 
 def _add_config_values(app: Sphinx, config: Config) -> None:
-    config.templates_path.append(str(Path(__file__).parent.parent / "templates"))
+    config.templates_path.append(str(Path(__file__).parent / "_templates"))
     config.add("sphinx_flyout_header", app.config.project, "html", str)
     config["sphinx_flyout_current_version"] = _get_git_branch(app)
 
