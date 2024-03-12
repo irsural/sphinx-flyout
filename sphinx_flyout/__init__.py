@@ -17,13 +17,13 @@ def setup(app: Sphinx) -> None:
     app.add_config_value("sphinx_flyout_tags", [], "html", list)
     app.add_config_value("sphinx_flyout_branches", [], "html", list)
     app.add_config_value("sphinx_flyout_downloads", [], "html", list)
+    app.connect('config-inited', _check_config_values)
     app.connect("config-inited", _add_config_values)
-    app.connect('builder-inited', _check_config_values)
     app.connect("html-page-context", add_flyout_to_context)
 
 
-def _check_config_values(app: Sphinx) -> None:
-    if not app.config.sphinx_flyout_host:
+def _check_config_values(app: Sphinx, config: Config) -> None:
+    if not config.sphinx_flyout_host:
         raise ConfigError("Обязательный параметр sphinx_flyout_host не установлен")
 
 
