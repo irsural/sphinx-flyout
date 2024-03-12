@@ -43,7 +43,7 @@ def _get_git_branch(app: Sphinx) -> str:
     else:
         logger.warning("Не удалось получить имя текущей ветки git: "
                        f"{process.stderr.decode('utf-8')}")
-        return ""
+        return "Unknown"
 
 
 def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
