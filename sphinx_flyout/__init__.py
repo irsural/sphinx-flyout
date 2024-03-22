@@ -72,5 +72,5 @@ def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
 def _make_links_relate_to_host(host: str, project: str, section: str, links: list[str]) -> dict[str, str]:
     new_links = {}
     for link in links:
-        new_links[link] = f"{host}/{project}/{section}/{link}".lower()
+        new_links[link] = f"{host}/{project}/{section}/{link}"
     return new_links
