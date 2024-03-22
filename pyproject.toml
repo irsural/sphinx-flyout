@@ -12,15 +12,17 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
+dependencies = [
+    "sphinx",
+    "docutils",
+    "setuptools",
+]
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project.urls]
 Homepage = "https://github.com/irsural/sphinx-flyout"
-
-[project.dependencies]
 
 [tool.ruff]
 line-length = 100
