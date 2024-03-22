@@ -55,7 +55,7 @@ def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
     logger.info(f"Writing flyout to {pagename}")
     context["current_version"] = app.config.sphinx_flyout_current_version
     host = app.config.sphinx_flyout_host
-    project_url = urllib.parse.urlencode(app.config.sphinx_flyout_header)
+    project_url = urllib.parse.quote(app.config.sphinx_flyout_header)
     context["header"] = app.config.sphinx_flyout_header
     context["downloads"] = _make_links_relate_to_host(
         host, project_url, 'download', app.config.sphinx_flyout_downloads
