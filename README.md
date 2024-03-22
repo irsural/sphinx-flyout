@@ -8,7 +8,7 @@
 ### Установка
 
 ```bash
-pip install sphinx-flyout
+pip install git+https://github.com/irsural/sphinx-flyout@master
 ```
 
 Расширение добавляется в файл конфигурации sphinx (**conf.py**), так же как и другие расширения sphinx:
@@ -46,7 +46,7 @@ extensions = [
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`html: sphinx_flyout_host / download / html`
+`html: sphinx_flyout_host / sphinx_flyout_header / download / html`
 
 По умолчанию пуст, а раздел **Загрузки** не отображается
 
@@ -56,7 +56,7 @@ extensions = [
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`ветка1: sphinx_flyout_host / branch / ветка1`
+`ветка1: sphinx_flyout_host / sphinx_flyout_header / branch / ветка1`
 
 По умолчанию пуст, а раздел **Ветки** не отображается
 
@@ -66,7 +66,7 @@ extensions = [
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`ветка1: sphinx_flyout_host / tag / ветка1`
+`тэг1: sphinx_flyout_host / sphinx_flyout_header / tag / тэг1`
 
 По умолчанию пуст, а раздел **Тэги** не отображается
 
@@ -74,7 +74,6 @@ extensions = [
 
 Содержимое **conf.py**:
 ```python
-sphinx_flyout_current_version = "1.0"
 sphinx_flyout_header = "My project"
 sphinx_flyout_repository_link = "https://gitea.example.com/my/project"
 
@@ -89,10 +88,10 @@ sphinx_flyout_branches = ["b1", "master"]
 
 ![flyout](docs/images/menu.png)
 
-Ссылки **Ветки** ведут на `https://example.com/branch/b1` и `https://example.com/branch/master`
+Ссылки **Ветки** ведут на `https://example.com/My%20project/branch/b1` и `https://example.com/My%20project/branch/master`
 
-Ссылки **Тэги** ведут на `https://example.com/tag/t2` и `https://example.com/tag/release`
+Ссылки **Тэги** ведут на `https://example.com/My%20project/tag/t2` и `https://example.com/My%20project/tag/release`
 
-Ссылки **Загрузки** ведут на `https://example.com/download/html` и `https://example.com/download/pdf`
+Ссылки **Загрузки** ведут на `https://example.com/My%20project/download/html` и `https://example.com/My%20project/download/pdf`
 
 Ссылка **Посмотреть** ведёт на `https://gitea.example.com/my/project`
