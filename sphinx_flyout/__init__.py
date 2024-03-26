@@ -48,25 +48,28 @@ def _get_git_branch(app: Sphinx) -> str:
 
 def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
                           context: dict[str, Any], doctree: Any) -> None:
-    if app.config.html_theme != "sphinx_rtd_theme":
-        logger.warning(f"Тема {app.config.html_theme} не поддерживается. Пожалуйста, используйте "
-                       "'sphinx_rtd_theme'")
-        return
-    logger.info(f"Writing flyout to {pagename}")
-    context["current_version"] = app.config.sphinx_flyout_current_version
-    host = app.config.sphinx_flyout_host
-    project_url = urllib.parse.quote(app.config.sphinx_flyout_header)
-    context["header"] = app.config.sphinx_flyout_header
-    context["downloads"] = _make_links_relate_to_host(
-        host, project_url, 'download', app.config.sphinx_flyout_downloads
-    )
-    context["repository_link"] = f"{host}/{app.config.sphinx_flyout_repository_link}"
-    context["tags"] = _make_links_relate_to_host(
-        host, project_url, 'tag', app.config.sphinx_flyout_tags,
-    )
-    context["branches"] = _make_links_relate_to_host(
-        host, project_url, 'branch', app.config.sphinx_flyout_branches,
-    )
+    try:
+        if app.config.html_theme != "sphinx_rtd_theme":
+            logger.warning(f"Тема {app.config.html_theme} не поддерживается. Пожалуйста, используйте "
+                           "'sphinx_rtd_theme'")
+            return
+        logger.info(f"Writing flyout to {pagename}")
+        context["current_version"] = app.config.sphinx_flyout_current_version
+        host = app.config.sphinx_flyout_host
+        project_url = urllib.parse.quote(app.config.sphinx_flyout_header)
+        context["header"] = app.config.sphinx_flyout_header
+        context["downloads"] = _make_links_relate_to_host(
+            host, project_url, 'download', app.config.sphinx_flyout_downloads
+        )
+        context["repository_link"] = f"{host}/{app.config.sphinx_flyout_repository_link}"
+        context["tags"] = _make_links_relate_to_host(
+            host, project_url, 'tag', app.config.sphinx_flyout_tags,
+        )
+        context["branches"] = _make_links_relate_to_host(
+            host, project_url, 'branch', app.config.sphinx_flyout_branches,
+        )
+    except Exception as e:
+        raise ConfigError(f"Не удалось добавить flyout: {e}")
 
 
 def _make_links_relate_to_host(host: str, project: str, section: str, links: list[str]) -> dict[str, str]:
