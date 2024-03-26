@@ -1,6 +1,6 @@
 [project]
 name = "sphinx-flyout"
-version = "0.0.1a"
+version = "0.1"
 authors = [
   { name="IRS Ural" },
 ]
