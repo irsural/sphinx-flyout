@@ -1,8 +1,8 @@
 import subprocess
+import urllib.parse
 from pathlib import Path
 from typing import Any
 
-import urllib.parse
 from sphinx.application import Sphinx
 from sphinx.config import Config
 from sphinx.errors import ConfigError
@@ -50,8 +50,8 @@ def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
                           context: dict[str, Any], doctree: Any) -> None:
     try:
         if app.config.html_theme != "sphinx_rtd_theme":
-            logger.warning(f"Тема {app.config.html_theme} не поддерживается. Пожалуйста, используйте "
-                           "'sphinx_rtd_theme'")
+            logger.warning(f"Тема {app.config.html_theme} не поддерживается. Пожалуйста, "
+                           "используйте 'sphinx_rtd_theme'")
             return
         logger.info(f"Writing flyout to {pagename}")
         context["current_version"] = app.config.sphinx_flyout_current_version
@@ -72,10 +72,13 @@ def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
             host, project_url, 'branch', app.config.sphinx_flyout_branches,
         )
     except Exception as e:
-        raise ConfigError(f"Не удалось добавить flyout: {e}")
+        raise ConfigError("Не удалось добавить flyout") from e
 
 
-def _make_links_relate_to_host(host: str, project: str, section: str, links: list[str]) -> dict[str, str]:
+def _make_links_relate_to_host(host: str,
+                               project: str,
+                               section: str,
+                               links: list[str]) -> dict[str, str]:
     new_links = {}
     for link in links:
         new_links[link] = f"{host}/{project}/{section}/{link}"
