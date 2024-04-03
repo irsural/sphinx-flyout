@@ -1,23 +1,23 @@
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> {{ header }}</span>
-      v: {{ current_version }}
+      v: {{ current_version.name }}
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
-      {% if branches %}
+      {% if versions.branches %}
       <dl>
         <dt>Ветки</dt>
-        {% for slug, url in branches.items() %}
-          <dd><a href="{{ url }}">{{ slug }}</a></dd>
+        {% for item in versions.branches %}
+          <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
         {% endfor %}
       </dl>
       {% endif %}
-      {% if tags %}
+      {% if versions.tags %}
       <dl>
         <dt>Тэги</dt>
-        {% for slug, url in tags.items() %}
-          <dd><a href="{{ url }}">{{ slug }}</a></dd>
+        {% for item in versions.tags %}
+          <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
         {% endfor %}
       </dl>
       {% endif %}

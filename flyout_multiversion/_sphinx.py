@@ -1,0 +1,234 @@
+import collections
+import datetime
+import json
+import logging
+from pathlib import Path
+from typing import Any, Iterator
+
+from sphinx.application import Sphinx
+from sphinx.config import Config
+from sphinx.errors import ConfigError
+from sphinx.locale import _
+from sphinx.util import i18n as sphinx_i18n
+
+DEFAULT_REF_WHITELIST: list[str] = ["master"]
+DEFAULT_REMOTE_WHITELIST: list[str] = ["release"]
+DEFAULT_RELEASED_PATTERN = ""
+
+HOST_PATH = "/home/study5/dev/ida_copy/build"
+
+
+logger = logging.getLogger(__name__)
+
+DATE_FMT = "%Y-%m-%d %H:%M:%S %z"
+Version = collections.namedtuple(
+    "Version",
+    [
+        "name",
+        "url",
+        "version",
+        "release",
+    ],
+)
+
+
+class VersionInfo:
+    def __init__(self,
+                 app: Sphinx,
+                 context: dict[str, Any],
+                 metadata: dict[str, dict[str, str]],
+                 current_version_name: str) -> None:
+        self.app = app
+        self.context = context
+        self.metadata = metadata
+        self.current_version_name = current_version_name
+
+    def _dict_to_versionobj(self, v: dict[str, str]) -> Version:
+        return Version(
+            name=v["name"],
+            url=_check_protocol(self.app.config.sphinx_flyout_host) + f'/{v["source"]}/{v["name"]}',
+            version=v["version"],
+            release=v["release"]
+        )
+
+    @property
+    def tags(self) -> list[Version]:
+        return [
+            self._dict_to_versionobj(v)
+            for v in self.metadata.values()
+            if v["source"] == "tags"
+        ]
+
+    @property
+    def branches(self) -> list[Version]:
+        return [
+            self._dict_to_versionobj(v)
+            for v in self.metadata.values()
+            if v["source"] != "tags"
+        ]
+
+    @property
+    def releases(self) -> list[Version]:
+        return [
+            self._dict_to_versionobj(v)
+            for v in self.metadata.values()
+            if v["is_released"]
+        ]
+
+    @property
+    def in_development(self) -> list[Version]:
+        return [
+            self._dict_to_versionobj(v)
+            for v in self.metadata.values()
+            if not v["is_released"]
+        ]
+
+    def __iter__(self) -> Iterator[Version]:
+        for item in self.tags:
+            yield item
+        for item in self.branches:
+            yield item
+
+    def __getitem__(self, name: str) -> Version | None:
+        v = self.metadata.get(name)
+        if v:
+            return self._dict_to_versionobj(v)
+        return None
+
+    def vhasdoc(self, other_version_name: str) -> bool:
+        if self.current_version_name == other_version_name:
+            return True
+
+        other_version = self.metadata[other_version_name]
+        return self.context["pagename"] in other_version["docnames"]
+
+
+def html_page_context(app: Sphinx,
+                      pagename: str,
+                      templatename: str,
+                      context: dict[str, Any],
+                      doctree: str) -> None:
+    versioninfo = VersionInfo(
+        app, context, app.config.smv_metadata, app.config.smv_current_version
+    )
+    _update_flyout_menu(app.config, versioninfo)
+    try:
+        context["current_version"] = versioninfo[app.config.smv_current_version]
+        context["versions"] = versioninfo
+        context["vhasdoc"] = versioninfo.vhasdoc
+
+        context["latest_version"] = versioninfo[app.config.smv_latest_version]
+        context["html_theme"] = app.config.html_theme
+        if app.config.html_theme != "sphinx_rtd_theme":
+            logger.warning("Тема %s не поддерживается. Пожалуйста, "
+                           "используйте 'sphinx_rtd_theme'", app.config.html_theme)
+            return
+        logger.info("Writing flyout to %s", pagename)
+
+    except Exception as e:
+        errormsg = "Не удалось добавить flyout"
+        raise ConfigError(errormsg) from e
+
+
+def _update_flyout_menu(config: Config, versioninfo: VersionInfo) -> None:
+    for branch in config.smv_flyout_branch_list:
+        if branch not in versioninfo.metadata:
+            versioninfo.metadata[branch] = {
+                "name": branch,
+                "source": "heads",
+                "outputdir": HOST_PATH + "/heads/" + branch,
+                "version": '',
+                "release": ''
+            }
+    for tag in config.smv_flyout_tag_list:
+        if tag not in versioninfo.metadata:
+            versioninfo.metadata[tag] = {
+                "name": tag,
+                "source": "tags",
+                "outputdir": HOST_PATH + "/tags/" + tag,
+                "version": '',
+                "release": ''
+            }
+
+
+def _check_protocol(url: str) -> str:
+    if not url.startswith(("http://", "https://")):
+        return "https://" + url
+    return url
+
+
+def config_inited(app: Sphinx, config: Config) -> None:
+    """
+    Update the Sphinx builder.
+
+    :param config: Sphinx config object
+    :param app: Sphinx application object.
+    """
+
+    if not config["smv_metadata"]:
+        if not config["smv_metadata_path"]:
+            return
+
+        with open(config["smv_metadata_path"]) as f:
+            metadata = json.load(f)
+
+        config["smv_metadata"] = metadata
+
+    if not config["smv_current_version"]:
+        return
+
+    try:
+        data = app.config["smv_metadata"][config["smv_current_version"]]
+    except KeyError:
+        return
+
+    app.connect("html-page-context", html_page_context)
+
+    # Restore config values
+    old_config = Config.read(data["confdir"])
+    old_config.pre_init_values()
+    old_config.init_values()
+    config["version"] = data["version"]
+    config["release"] = data["release"]
+    config["rst_prolog"] = data["rst_prolog"]
+    config["today"] = old_config.today
+    if not config["today"]:
+        config["today"] = sphinx_i18n.format_date(
+            format=config.today_fmt or _("%b %d, %Y"),
+            date=datetime.datetime.strptime(data["creatordate"], DATE_FMT),
+            language=config.language,
+        )
+
+
+def _add_config_values(app: Sphinx, config: Config) -> None:
+    config.templates_path.append(str(Path(__file__).parent / "_templates"))
+    config.add("sphinx_flyout_header", app.config.project, "html", str)
+
+
+def setup(app: Sphinx) -> None:
+    app.add_config_value("sphinx_flyout_host", "", "html", str)
+    app.add_config_value("smv_metadata", {}, "html")
+    app.add_config_value("smv_metadata_path", "", "html")
+    app.add_config_value("smv_current_version", "", "html")
+    app.add_config_value("smv_latest_version", "master", "html")
+    app.connect("config-inited", _add_config_values)
+
+    app.add_config_value(
+        "smv_tag_whitelist", DEFAULT_REF_WHITELIST, "html"
+    )
+    app.add_config_value(
+        "smv_branch_whitelist", DEFAULT_REF_WHITELIST, "html"
+    )
+    app.add_config_value(
+        "smv_flyout_branch_list", DEFAULT_REF_WHITELIST, "html"
+    )
+    app.add_config_value(
+        "smv_flyout_tag_list", DEFAULT_REF_WHITELIST, "html"
+    )
+    app.add_config_value(
+        "smv_remote_whitelist", DEFAULT_REMOTE_WHITELIST, "html"
+    )
+    app.add_config_value(
+        "smv_released_pattern", DEFAULT_RELEASED_PATTERN, "html"
+    )
+    app.connect("config-inited", config_inited)
