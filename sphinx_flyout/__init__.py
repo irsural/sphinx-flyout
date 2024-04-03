@@ -25,7 +25,8 @@ def setup(app: Sphinx) -> None:
 
 def _check_config_values(app: Sphinx, config: Config) -> None:
     if not config.sphinx_flyout_host:
-        raise ConfigError("Обязательный параметр sphinx_flyout_host не установлен")
+        errormsg = "Обязательный параметр sphinx_flyout_host не установлен"
+        raise ConfigError(errormsg)
 
 
 def _add_config_values(app: Sphinx, config: Config) -> None:
@@ -41,8 +42,8 @@ def _get_git_branch(app: Sphinx) -> str:
     if process.returncode == 0:
         return process.stdout.decode().strip()
     else:
-        logger.warning("Не удалось получить имя текущей ветки git: "
-                       f"{process.stderr.decode('utf-8')}")
+        logger.warning("Не удалось получить имя текущей ветки git: %s",
+                       process.stderr.decode('utf-8'))
         return "Unknown"
 
 
@@ -50,14 +51,14 @@ def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
                           context: dict[str, Any], doctree: Any) -> None:
     try:
         if app.config.html_theme != "sphinx_rtd_theme":
-            logger.warning(f"Тема {app.config.html_theme} не поддерживается. Пожалуйста, "
-                           "используйте 'sphinx_rtd_theme'")
+            logger.warning("Тема %s не поддерживается. Пожалуйста, "
+                           "используйте 'sphinx_rtd_theme'", app.config.html_theme)
             return
-        logger.info(f"Writing flyout to {pagename}")
+        logger.info("Writing flyout to %s", pagename)
         context["current_version"] = app.config.sphinx_flyout_current_version
         host = app.config.sphinx_flyout_host
         if not host.startswith(("http://", "https://")):
-            host = "https://"+host
+            host = "https://" + host
         project_url = urllib.parse.quote(app.config.sphinx_flyout_header)
         context["header"] = app.config.sphinx_flyout_header
         context["downloads"] = _make_links_relate_to_host(
@@ -72,7 +73,8 @@ def add_flyout_to_context(app: Sphinx, pagename: str, templatename: str,
             host, project_url, 'branch', app.config.sphinx_flyout_branches,
         )
     except Exception as e:
-        raise ConfigError("Не удалось добавить flyout") from e
+        errormsg = "Не удалось добавить flyout"
+        raise ConfigError(errormsg) from e
 
 
 def _make_links_relate_to_host(host: str,
