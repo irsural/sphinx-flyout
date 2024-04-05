@@ -164,12 +164,6 @@ def _check_protocol(url: str) -> str:
 
 
 def config_inited(app: Sphinx, config: Config) -> None:
-    """
-    Update the Sphinx builder.
-
-    :param config: Sphinx config object
-    :param app: Sphinx application object.
-    """
 
     if not config["fmv_metadata"]:
         if not config["fmv_metadata_path"]:
@@ -207,8 +201,17 @@ def config_inited(app: Sphinx, config: Config) -> None:
 
 
 def _add_config_values(app: Sphinx, config: Config) -> None:
+    _check_config_values(config)
     config.templates_path.append(str(Path(__file__).parent / "_templates"))
     config.add("fmv_flyout_header", app.config.project, "html", str)
+
+
+def _check_config_values(config: Config) -> None:
+    necessary_values = ["fmv_flyout_host", ]
+    for value in necessary_values:
+        if not config[value]:
+            errormsg = f"Параметр {value} не найден в конфигурационном файле"
+            raise ConfigError(errormsg)
 
 
 def setup(app: Sphinx) -> None:
