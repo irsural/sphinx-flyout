@@ -136,7 +136,6 @@ def _update_flyout_menu(config: Config, versioninfo: VersionInfo) -> None:
             versioninfo.metadata[branch] = {
                 "name": branch,
                 "source": "heads",
-                "outputdir": HOST_PATH + "/heads/" + branch,
                 "version": '',
                 "release": ''
             }
@@ -145,7 +144,6 @@ def _update_flyout_menu(config: Config, versioninfo: VersionInfo) -> None:
             versioninfo.metadata[tag] = {
                 "name": tag,
                 "source": "tags",
-                "outputdir": HOST_PATH + "/tags/" + tag,
                 "version": '',
                 "release": ''
             }
