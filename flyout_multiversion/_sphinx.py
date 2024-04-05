@@ -118,7 +118,13 @@ def html_page_context(app: Sphinx,
         context["current_version"] = versioninfo[app.config.smv_current_version]
         context["versions"] = versioninfo
         context["vhasdoc"] = versioninfo.vhasdoc
-
+        host = _check_protocol(app.config["smv_flyout_host"])
+        context["header"] = app.config["sphinx_flyout_header"]
+        context["downloads"] = {
+            name: host + "/download/" + name
+            for name in app.config["fmv_flyout_downloads"]
+        }
+        context["repository_link"] = app.config["smv_flyout_repository"]
         context["latest_version"] = versioninfo[app.config.smv_latest_version]
         context["html_theme"] = app.config.html_theme
         if app.config.html_theme != "sphinx_rtd_theme":
