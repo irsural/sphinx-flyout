@@ -32,7 +32,7 @@ def working_dir(path: str) -> Iterator[Never]:
         os.chdir(prev_cwd)
 
 
-def load_sphinx_config_worker(q: Queue[Config | Exception],
+def load_sphinx_config_worker(q: "Queue[Config | Exception]",
                               confpath: str,
                               confoverrides: dict[str, Any],
                               add_defaults: bool) -> None:
@@ -81,7 +81,7 @@ def load_sphinx_config_worker(q: Queue[Config | Exception],
 def load_sphinx_config(confpath: str,
                        confoverrides: dict[str, Any],
                        add_defaults: bool = False) -> Config:
-    q: Queue[Config | Exception] = Queue()
+    q: "Queue[Config | Exception]" = Queue()
     proc = Process(
         target=load_sphinx_config_worker,
         args=(q, confpath, confoverrides, add_defaults),
