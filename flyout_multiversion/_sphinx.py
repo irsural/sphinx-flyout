@@ -48,7 +48,7 @@ class VersionInfo:
     def _dict_to_versionobj(self, v: dict[str, str]) -> Version:
         return Version(
             name=v["name"],
-            url=_check_protocol(self.app.config["smv_flyout_host"]) + f'/{v["source"]}/{v["name"]}',
+            url=_check_protocol(self.app.config["fmv_flyout_host"]) + f'/{v["source"]}/{v["name"]}',
             version=v["version"],
             release=v["release"]
         )
@@ -111,21 +111,21 @@ def html_page_context(app: Sphinx,
                       context: dict[str, Any],
                       doctree: str) -> None:
     versioninfo = VersionInfo(
-        app, context, app.config.smv_metadata, app.config.smv_current_version
+        app, context, app.config.fmv_metadata, app.config.fmv_current_version
     )
     _update_flyout_menu(app.config, versioninfo)
     try:
-        context["current_version"] = versioninfo[app.config.smv_current_version]
+        context["current_version"] = versioninfo[app.config.fmv_current_version]
         context["versions"] = versioninfo
         context["vhasdoc"] = versioninfo.vhasdoc
-        host = _check_protocol(app.config["smv_flyout_host"])
-        context["header"] = app.config["sphinx_flyout_header"]
+        host = _check_protocol(app.config["fmv_flyout_host"])
+        context["header"] = app.config["fmv_flyout_header"]
         context["downloads"] = {
             name: host + "/download/" + name
             for name in app.config["fmv_flyout_downloads"]
         }
-        context["repository_link"] = app.config["smv_flyout_repository"]
-        context["latest_version"] = versioninfo[app.config.smv_latest_version]
+        context["repository_link"] = app.config["fmv_flyout_repository"]
+        context["latest_version"] = versioninfo[app.config.fmv_latest_version]
         context["html_theme"] = app.config.html_theme
         if app.config.html_theme != "sphinx_rtd_theme":
             logger.warning("Тема %s не поддерживается. Пожалуйста, "
@@ -139,7 +139,7 @@ def html_page_context(app: Sphinx,
 
 
 def _update_flyout_menu(config: Config, versioninfo: VersionInfo) -> None:
-    for branch in config.smv_flyout_branch_list:
+    for branch in config.fmv_flyout_branch_list:
         if branch not in versioninfo.metadata:
             versioninfo.metadata[branch] = {
                 "name": branch,
@@ -147,7 +147,7 @@ def _update_flyout_menu(config: Config, versioninfo: VersionInfo) -> None:
                 "version": '',
                 "release": ''
             }
-    for tag in config.smv_flyout_tag_list:
+    for tag in config.fmv_flyout_tag_list:
         if tag not in versioninfo.metadata:
             versioninfo.metadata[tag] = {
                 "name": tag,
@@ -171,20 +171,20 @@ def config_inited(app: Sphinx, config: Config) -> None:
     :param app: Sphinx application object.
     """
 
-    if not config["smv_metadata"]:
-        if not config["smv_metadata_path"]:
+    if not config["fmv_metadata"]:
+        if not config["fmv_metadata_path"]:
             return
 
-        with open(config["smv_metadata_path"]) as f:
+        with open(config["fmv_metadata_path"]) as f:
             metadata = json.load(f)
 
-        config["smv_metadata"] = metadata
+        config["fmv_metadata"] = metadata
 
-    if not config["smv_current_version"]:
+    if not config["fmv_current_version"]:
         return
 
     try:
-        data = app.config["smv_metadata"][config["smv_current_version"]]
+        data = app.config["fmv_metadata"][config["fmv_current_version"]]
     except KeyError:
         return
 
@@ -208,33 +208,35 @@ def config_inited(app: Sphinx, config: Config) -> None:
 
 def _add_config_values(app: Sphinx, config: Config) -> None:
     config.templates_path.append(str(Path(__file__).parent / "_templates"))
-    config.add("sphinx_flyout_header", app.config.project, "html", str)
+    config.add("fmv_flyout_header", app.config.project, "html", str)
 
 
 def setup(app: Sphinx) -> None:
-    app.add_config_value("sphinx_flyout_host", "", "html", str)
-    app.add_config_value("smv_metadata", {}, "html")
-    app.add_config_value("smv_metadata_path", "", "html")
-    app.add_config_value("smv_current_version", "", "html")
-    app.add_config_value("smv_latest_version", "master", "html")
+    app.add_config_value("fmv_flyout_host", "", "html", str)
+    app.add_config_value("fmv_flyout_repository", "", "html", str)
+    app.add_config_value("fmv_flyout_downloads", [], "html", list)
+    app.add_config_value("fmv_metadata", {}, "html")
+    app.add_config_value("fmv_metadata_path", "", "html")
+    app.add_config_value("fmv_current_version", "", "html")
+    app.add_config_value("fmv_latest_version", "master", "html")
     app.connect("config-inited", _add_config_values)
 
     app.add_config_value(
-        "smv_tag_whitelist", DEFAULT_REF_WHITELIST, "html"
+        "fmv_tag_whitelist", DEFAULT_REF_WHITELIST, "html"
     )
     app.add_config_value(
-        "smv_branch_whitelist", DEFAULT_REF_WHITELIST, "html"
+        "fmv_branch_whitelist", DEFAULT_REF_WHITELIST, "html"
     )
     app.add_config_value(
-        "smv_flyout_branch_list", DEFAULT_REF_WHITELIST, "html"
+        "fmv_flyout_branch_list", DEFAULT_REF_WHITELIST, "html"
     )
     app.add_config_value(
-        "smv_flyout_tag_list", DEFAULT_REF_WHITELIST, "html"
+        "fmv_flyout_tag_list", DEFAULT_REF_WHITELIST, "html"
     )
     app.add_config_value(
-        "smv_remote_whitelist", DEFAULT_REMOTE_WHITELIST, "html"
+        "fmv_remote_whitelist", DEFAULT_REMOTE_WHITELIST, "html"
     )
     app.add_config_value(
-        "smv_released_pattern", DEFAULT_RELEASED_PATTERN, "html"
+        "fmv_released_pattern", DEFAULT_RELEASED_PATTERN, "html"
     )
     app.connect("config-inited", config_inited)

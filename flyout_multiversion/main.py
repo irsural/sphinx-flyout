@@ -45,30 +45,30 @@ def load_sphinx_config_worker(q: Queue[Config | Exception],
 
         if add_defaults:
             current_config.add(
-                "smv_tag_whitelist",
+                "fmv_tag_whitelist",
                 _sphinx.DEFAULT_REF_WHITELIST,
                 "html",
                 str
             )
             current_config.add(
-                "smv_branch_whitelist",
+                "fmv_branch_whitelist",
                 _sphinx.DEFAULT_REF_WHITELIST,
                 "html",
                 str,
             )
             current_config.add(
-                "smv_remote_whitelist",
+                "fmv_remote_whitelist",
                 _sphinx.DEFAULT_REMOTE_WHITELIST,
                 "html",
                 str,
             )
             current_config.add(
-                "smv_released_pattern",
+                "fmv_released_pattern",
                 _sphinx.DEFAULT_RELEASED_PATTERN,
                 "html",
                 str,
             )
-            current_config.add("smv_prefer_remote_refs", False, "html", bool)
+            current_config.add("fmv_prefer_remote_refs", False, "html", bool)
         current_config.pre_init_values()
         current_config.init_values()
     except Exception as err:
@@ -191,14 +191,14 @@ def main(argv: list[str] | None = None) -> int:
     # Get git references
     gitrefs = git.get_refs(
         str(gitroot),
-        config.smv_tag_whitelist,
-        config.smv_branch_whitelist,
-        config.smv_remote_whitelist,
+        config.fmv_tag_whitelist,
+        config.fmv_branch_whitelist,
+        config.fmv_remote_whitelist,
         files=(sourcedir, conffile),
     )
 
     # Order git refs
-    if config.smv_prefer_remote_refs:
+    if config.fmv_prefer_remote_refs:
         gitref_list = sorted(gitrefs, key=lambda x: (not x.is_remote, *x))
     else:
         gitref_list = sorted(gitrefs, key=lambda x: (x.is_remote, *x))
@@ -243,7 +243,7 @@ def main(argv: list[str] | None = None) -> int:
                 "release": current_config.release,
                 "rst_prolog": current_config.rst_prolog,
                 "is_released": bool(
-                    re.match(config.smv_released_pattern, gitref.refname)
+                    re.match(config.fmv_released_pattern, gitref.refname)
                 ),
                 "source": gitref.source,
                 "creatordate": gitref.creatordate.strftime(_sphinx.DATE_FMT),
@@ -269,7 +269,7 @@ def main(argv: list[str] | None = None) -> int:
             json.dump(metadata, fp, indent=2)
 
         # Run Sphinx
-        argv.extend(["-D", f"smv_metadata_path={metadata_path}"])
+        argv.extend(["-D", f"fmv_metadata_path={metadata_path}"])
         for version_name, data in metadata.items():
             os.makedirs(data["outputdir"], exist_ok=True)
 
@@ -285,7 +285,7 @@ def main(argv: list[str] | None = None) -> int:
                 [
                     *defines,
                     "-D",
-                    f"smv_current_version={version_name}",
+                    f"fmv_current_version={version_name}",
                     "-c",
                     confdir_absolute,
                     data["sourcedir"],
