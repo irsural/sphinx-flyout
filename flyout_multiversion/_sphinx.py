@@ -46,7 +46,7 @@ class VersionInfo:
     def _dict_to_versionobj(self, v: dict[str, str]) -> Version:
         return Version(
             name=v["name"],
-            url=_check_protocol(self.app.config.sphinx_flyout_host) + f'/{v["source"]}/{v["name"]}',
+            url=_check_protocol(self.app.config["smv_flyout_host"]) + f'/{v["source"]}/{v["name"]}',
             version=v["version"],
             release=v["release"]
         )
@@ -126,7 +126,7 @@ def html_page_context(app: Sphinx,
         logger.info("Writing flyout to %s", pagename)
 
     except Exception as e:
-        errormsg = "Не удалось добавить flyout"
+        errormsg = f"Не удалось добавить flyout: {e}"
         raise ConfigError(errormsg) from e
 
 
