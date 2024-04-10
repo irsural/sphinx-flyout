@@ -1,14 +1,15 @@
 # sphinx-flyout
 
 **sphinx-flyout** - это расширение [Sphinx](https://www.sphinx-doc.org/en/master/)
-для автоматической генерации [flyout-меню](https://docs.readthedocs.io/en/stable/flyout-menu.html) 
+для автоматической сборки нескольких версий сайта и
+генерации [flyout-меню](https://docs.readthedocs.io/en/stable/flyout-menu.html) 
 
 ## Использование
 
 ### Установка
 
 ```bash
-pip install git+https://github.com/irsural/sphinx-flyout@master
+pip install git+https://github.com/irsural/sphinx-flyout@multiversion
 ```
 
 Расширение добавляется в файл конфигурации sphinx (**conf.py**), так же как и другие расширения sphinx:
@@ -16,7 +17,7 @@ pip install git+https://github.com/irsural/sphinx-flyout@master
 ```python
 extensions = [
     ...,
-    'sphinx_flyout',
+    'flyout_multiversion',
     ...
 ]
 ```
@@ -25,64 +26,106 @@ extensions = [
 
 У расширения есть 5 параметров, задаваемых переменными в **conf.py**.
 
-#### ``sphinx_flyout_header``
+#### ``fmv_flyout_header``
 
 Заголовок меню. По умолчанию - название проекта **Sphinx**
 
-#### ``sphinx_flyout_repository_link``
+#### ``fmv_flyout_repository``
 
 Строка со ссылкой на репозиторий проекта. По умолчанию пустая,
 а раздел **Репозиторий** не отображается
 
-#### ``sphinx_flyout_host``
+#### ``fmv_flyout_host``
 
 Ссылка на хостинг сайта. Автоматически вставляется в нижеупомянутые ссылки. 
-Обязательный параметр
+В случае, когда ссылка задаётся без протокола (http или https), ей автоматически
+присваивается протокол https. **Обязательный параметр**
 
-#### ``sphinx_flyout_downloads``
+#### ``fmv_flyout_downloads``
 
 Список с форматами документации проекта, доступными для загрузки 
 (`html`, `pdf` и т.д.) .
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`html: sphinx_flyout_host / sphinx_flyout_header / download / html`
+`html: fmv_flyout_host / fmv_flyout_header / download / html`
 
 По умолчанию пуст, а раздел **Загрузки** не отображается
 
-#### ``sphinx_flyout_branches``
+#### ``fmv_branch_whitelist``
 
-Список с названиями собранных веток проекта.
+Список с названиями веток репозитория, которые необходимо собрать. Ссылки на 
+эти ветки добавляются в flyout-меню
+
+По умолчанию - `["master"]`
+
+#### ``fmv_flyout_branch_list``
+
+Список с названиями веток проекта.
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`ветка1: sphinx_flyout_host / sphinx_flyout_header / branch / ветка1`
+`ветка1: fmv_flyout_host / fmv_flyout_header / heads / ветка1`
 
-По умолчанию пуст, а раздел **Ветки** не отображается
+По умолчанию пуст.
 
-#### ``sphinx_flyout_tags``
+В случае, если в обоих списках есть одинаковая запись, она не дублируется.
+
+Если оба списка веток пусты, то раздел **Ветки** не отображается.
+
+#### ``fmv_tag_whitelist``
+
+Список с названиями тэгов проекта, которые необходимо собрать. Ссылки на 
+эти тэги добавляются в flyout-меню.
+
+По умолчанию - `["release"]`
+
+#### ``fmv_flyout_tags``
 
 Список с названиями собранных тэгов проекта.
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
 
-`тэг1: sphinx_flyout_host / sphinx_flyout_header / tag / тэг1`
+`тэг1: fmv_flyout_host / fmv_flyout_header / tags / тэг1`
 
-По умолчанию пуст, а раздел **Тэги** не отображается
+По умолчанию пуст.
 
+В случае, если в обоих списках есть одинаковая запись, она не дублируется.
+
+Если оба списка тэгов пусты, то раздел **Тэги** не отображается
+
+
+### Использование
+
+Для сборки нескольких версий требуется запустить установленный скрипт расширения
+
+``` bash
+python3 -m flyout_multiversion путь_до_папки_исходников путь_до_папки_конечной
+```
+
+К команде можно применять все те же флаги, что и к обычной сборке Sphinx. 
+Эти флаги будут применены для сборки всех веток и тэгов из соответствующих 
+параметров **conf.py** 
 ## Пример
 
 Содержимое **conf.py**:
 ```python
-sphinx_flyout_header = "My project"
-sphinx_flyout_repository_link = "https://gitea.example.com/my/project"
+fmv_flyout_header = "My project"
+fmv_flyout_repository_link = "https://gitea.example.com/my/project"
 
-sphinx_flyout_host = "https://example.com"
-sphinx_flyout_downloads = ["html", "pdf"]
+fmv_flyout_host = "example.com"
+fmv_flyout_downloads = ["html", "pdf"]
 
-sphinx_flyout_tags = ["t2", "release"]
-sphinx_flyout_branches = ["b1", "master"]
+fmv_tag_whitelist = ["release"]
+fmv_flyout_tags = ["t2"]
+
+fmv_branch_whitelist = ["master"]
+fmv_flyout_branches = ["b1", "master"]
 ```
+
+При запуске `python3 -m flyout_multiversion project_path build_path` будут
+собрана ветка `master` и тэг `release`, и помещены соответственно в 
+`build_path/tags/release` и `build_path/branches/master`
 
 Вид сгенерированного меню:
 
