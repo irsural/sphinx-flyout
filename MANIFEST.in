@@ -1,2 +1,1 @@
-include sphinx_flyout/_templates/versions.html
 include flyout_multiversion/_templates/versions.html
