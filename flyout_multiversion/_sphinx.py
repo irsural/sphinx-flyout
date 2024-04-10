@@ -15,10 +15,6 @@ DEFAULT_REF_WHITELIST: list[str] = ["master"]
 DEFAULT_REMOTE_WHITELIST: list[str] = ["release"]
 DEFAULT_RELEASED_PATTERN = ""
 
-HOST_PATH = "/home/study5/dev/ida_copy/build"
-# Поменять на путь до папки с сайтами
-# (можно достать из ENV, задать в скрипте)
-
 
 logger = logging.getLogger(__name__)
 
