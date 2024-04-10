@@ -301,7 +301,6 @@ def main(argv: list[str] | None = None) -> int:
                 "sphinx",
                 *current_argv,
             )
-            current_cwd = os.path.join(data["basedir"], cwd_relative)
             env = os.environ.copy()
             env.update(
                 {
@@ -313,7 +312,7 @@ def main(argv: list[str] | None = None) -> int:
                     "SPHINX_MULTIVERSION_CONFDIR": data["confdir"],
                 }
             )
-            check_call(cmd, cwd=current_cwd, env=env)
+            check_call(cmd, cwd=data["basedir"], env=env)
 
     return 0
 
