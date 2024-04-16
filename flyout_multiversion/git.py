@@ -23,6 +23,10 @@ VersionRef = namedtuple(
 logger = logging.getLogger(__name__)
 
 
+class GitError(Exception):
+    pass
+
+
 def get_toplevel_path(cwd: str | None = None) -> str:
     """
     Возвращает путь к корневой директории Git-репозитория.
