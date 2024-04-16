@@ -39,8 +39,12 @@ def get_toplevel_path(cwd: str | None = None) -> str:
         "rev-parse",
         "--show-toplevel",
     )
-    output = subprocess.check_output(cmd, cwd=cwd).decode()
-    return output.rstrip("\n")
+    try:
+        output = subprocess.check_output(cmd, cwd=cwd, stderr=subprocess.STDOUT).decode()
+        return output.rstrip("\n")
+    except subprocess.CalledProcessError as err:
+        errormsg = f"Running {cmd} in {cwd} resulted in following error:\n{err.output.decode()}"
+        raise GitError(errormsg) from err
 
 
 def get_all_refs(gitroot: str) -> Iterator[VersionRef]:
@@ -57,7 +61,12 @@ def get_all_refs(gitroot: str) -> Iterator[VersionRef]:
         "%(objectname)\t%(refname)\t%(creatordate:iso)",
         "refs",
     )
-    output = subprocess.check_output(cmd, cwd=gitroot).decode()
+    try:
+        output = subprocess.check_output(cmd, cwd=gitroot, stderr=subprocess.STDOUT).decode()
+    except subprocess.CalledProcessError as err:
+        errormsg = (f"Running {cmd} in {gitroot} resulted in following error:\n"
+                    f"{err.output.decode()}")
+        raise GitError(errormsg) from err
     for line in output.splitlines():
         is_remote = False
         fields = line.strip().split("\t")
@@ -206,7 +215,12 @@ def copy_tree(gitroot: str, dst: str, reference: VersionRef, sourcepath: str = "
             "--",
             sourcepath,
         )
-        subprocess.check_call(cmd, cwd=gitroot, stdout=fp)
+        try:
+            subprocess.check_call(cmd, cwd=gitroot, stdout=fp, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as err:
+            errormsg = (f"Running {cmd} in {gitroot} resulted in following error:\n"
+                        f"{err.output.decode()}")
+            raise GitError(errormsg) from err
         fp.seek(0)
         with tarfile.TarFile(fileobj=fp) as tarfp:
             tarfp.extractall(dst)
