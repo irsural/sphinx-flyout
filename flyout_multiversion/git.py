@@ -24,6 +24,12 @@ logger = logging.getLogger(__name__)
 
 
 def get_toplevel_path(cwd: str | None = None) -> str:
+    """
+    Возвращает путь к корневой директории Git-репозитория.
+
+    :param cwd: Путь к текущей рабочей директории (по умолчанию None)
+    :return: Путь к корневой директории Git-репозитория
+    """
     cmd = (
         "git",
         "rev-parse",
@@ -34,6 +40,12 @@ def get_toplevel_path(cwd: str | None = None) -> str:
 
 
 def get_all_refs(gitroot: str) -> Iterator[VersionRef]:
+    """
+    Итерируется по ссылкам (ref) в Git-репозитории.
+
+    :param gitroot: Путь к корневой директории Git-репозитория
+    :return: Ссылки Git-репозитория в формате VersionRef
+    """
     cmd = (
         "git",
         "for-each-ref",
@@ -76,6 +88,16 @@ def get_refs(
         remote_whitelist: list[str],
         files: tuple[str, ...] = ()
 ) -> Iterator[VersionRef]:
+    """
+    Итерируется по отфильтрованным ссылкам (refs) в Git-репозитории.
+
+    :param gitroot: Путь к корневой директории Git-репозитория
+    :param tag_whitelist: Список разрешенных тегов
+    :param branch_whitelist: Список разрешенных веток
+    :param remote_whitelist: Список разрешенных удаленных репозиториев
+    :param files: Кортеж обязательных файлов (по умолчанию пустой)
+    :return: Итератор с объектами VersionRef, представляющими отфильтрованные ссылки
+    """
     for ref in get_all_refs(gitroot):
         if ref.source == "tags":
             if ref.name not in tag_whitelist:
@@ -137,6 +159,14 @@ def get_refs(
 
 
 def file_exists(gitroot: str, refname: str, filename: str) -> bool:
+    """
+    Проверяет, существует ли файл в указанной ссылке (ref) в Git-репозитории.
+
+    :param gitroot: Путь к корневой директории Git-репозитория
+    :param refname: Имя ссылки (ref)
+    :param filename: Имя файла
+    :return: True, если файл существует, иначе False
+    """
     if os.sep != "/":
         # Git requires / path sep, make sure we use that
         filename = filename.replace(os.sep, "/")
@@ -154,6 +184,14 @@ def file_exists(gitroot: str, refname: str, filename: str) -> bool:
 
 
 def copy_tree(gitroot: str, dst: str, reference: VersionRef, sourcepath: str = ".") -> None:
+    """
+    Копирует содержимое указанной ссылки (ref) из Git-репозитория в целевую директорию.
+
+    :param gitroot: Путь к корневой директории Git-репозитория
+    :param dst: Путь к целевой директории
+    :param reference: Объект VersionRef, представляющий ссылку (ref)
+    :param sourcepath: Путь к исходной директории (по умолчанию ".")
+    """
     with tempfile.SpooledTemporaryFile() as fp:
         cmd = (
             "git",
