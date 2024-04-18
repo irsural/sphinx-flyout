@@ -31,7 +31,7 @@ def get_toplevel_path(cwd: str | None = None) -> str:
     """
     Возвращает путь к корневой директории Git-репозитория.
 
-    :param cwd: Путь к текущей рабочей директории (по умолчанию None)
+    :param cwd: Путь к текущей рабочей директории
     :return: Путь к корневой директории Git-репозитория
     """
     cmd = (
@@ -108,7 +108,7 @@ def get_refs(
     :param tag_whitelist: Список разрешенных тегов
     :param branch_whitelist: Список разрешенных веток
     :param remote_whitelist: Список разрешенных удаленных репозиториев
-    :param files: Кортеж обязательных файлов (по умолчанию пустой)
+    :param files: Кортеж обязательных файлов
     :return: Итератор с объектами VersionRef, представляющими отфильтрованные ссылки
     """
     for ref in get_all_refs(gitroot):
