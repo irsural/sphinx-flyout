@@ -4,23 +4,20 @@ import re
 import subprocess
 import tarfile
 import tempfile
-from collections import namedtuple
 from datetime import datetime
-from typing import Iterator
+from typing import Iterator, NamedTuple
 
-from errors import GitError
+from flyout_multiversion.errors import GitError
 
-VersionRef = namedtuple(
-    "VersionRef",
-    [
-        "name",
-        "commit",
-        "source",
-        "is_remote",
-        "refname",
-        "creatordate",
-    ],
-)
+
+class VersionRef(NamedTuple):
+    name: str
+    commit: str
+    source: str
+    is_remote: bool
+    refname: str
+    creatordate: datetime
+
 
 logger = logging.getLogger(__name__)
 
