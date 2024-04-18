@@ -8,6 +8,8 @@ from collections import namedtuple
 from datetime import datetime
 from typing import Iterator
 
+from errors import GitError
+
 VersionRef = namedtuple(
     "VersionRef",
     [
@@ -22,9 +24,6 @@ VersionRef = namedtuple(
 
 logger = logging.getLogger(__name__)
 
-
-class GitError(Exception):
-    pass
 
 
 def get_toplevel_path(cwd: str | None = None) -> str:
