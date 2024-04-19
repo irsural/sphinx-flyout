@@ -5,6 +5,7 @@ import subprocess
 import tarfile
 import tempfile
 from datetime import datetime
+from pathlib import Path
 from typing import Iterator, NamedTuple
 
 from flyout_multiversion.errors import GitError
@@ -22,7 +23,7 @@ class VersionRef(NamedTuple):
 logger = logging.getLogger(__name__)
 
 
-def get_toplevel_path(cwd: str | None = None) -> str:
+def get_toplevel_path(cwd: Path | None = None) -> Path:
     """
     Возвращает путь к корневой директории Git-репозитория.
 
@@ -30,15 +31,15 @@ def get_toplevel_path(cwd: str | None = None) -> str:
     :return: Путь к корневой директории Git-репозитория
     """
     cmd = (
-        "git",
-        "rev-parse",
-        "--show-toplevel",
+        'git',
+        'rev-parse',
+        '--show-toplevel',
     )
     try:
         output = subprocess.check_output(cmd, cwd=cwd, stderr=subprocess.STDOUT).decode()
-        return output.rstrip("\n")
+        return Path(output.rstrip('\n'))
     except subprocess.CalledProcessError as err:
-        errormsg = f"Running {cmd} in {cwd} resulted in following error:\n{err.output.decode()}"
+        errormsg = f'Running {cmd} in {cwd} resulted in following error:\n{err.output.decode()}'
         raise GitError(errormsg) from err
 
 
@@ -50,51 +51,48 @@ def _get_all_refs(gitroot: str) -> Iterator[VersionRef]:
     :return: Ссылки Git-репозитория в формате VersionRef
     """
     cmd = (
-        "git",
-        "for-each-ref",
-        "--format",
-        "%(objectname)\t%(refname)\t%(creatordate:iso)",
-        "refs",
+        'git',
+        'for-each-ref',
+        '--format',
+        '%(objectname)\t%(refname)\t%(creatordate:iso)',
+        'refs',
     )
     try:
         output = subprocess.check_output(cmd, cwd=gitroot, stderr=subprocess.STDOUT).decode()
     except subprocess.CalledProcessError as err:
-        errormsg = (f"Running {cmd} in {gitroot} resulted in following error:\n"
-                    f"{err.output.decode()}")
+        errormsg = (
+            f'Running {cmd} in {gitroot} resulted in following error:\n{err.output.decode()}'
+        )
         raise GitError(errormsg) from err
     for line in output.splitlines():
         is_remote = False
-        fields = line.strip().split("\t")
+        fields = line.strip().split('\t')
         if len(fields) != 3:
             continue
 
         commit = fields[0]
         refname = fields[1]
-        creatordate = datetime.strptime(
-            fields[2], "%Y-%m-%d %H:%M:%S %z"
-        )
+        creatordate = datetime.strptime(fields[2], '%Y-%m-%d %H:%M:%S %z')
 
         # Parse refname
-        matchobj = re.match(
-            r"^refs/(heads|tags|remotes/[^/]+)/(\S+)$", refname
-        )
+        matchobj = re.match(r'^refs/(heads|tags|remotes/[^/]+)/(\S+)$', refname)
         if not matchobj:
             continue
         source = matchobj.group(1)
         name = matchobj.group(2)
 
-        if source.startswith("remotes/"):
+        if source.startswith('remotes/'):
             is_remote = True
 
         yield VersionRef(name, commit, source, is_remote, refname, creatordate)
 
 
 def get_refs(
-        gitroot: str,
-        tag_whitelist: list[str],
-        branch_whitelist: list[str],
-        remote_whitelist: list[str],
-        files: tuple[str, ...] = ()
+    gitroot: str,
+    tag_whitelist: list[str],
+    branch_whitelist: list[str],
+    remote_whitelist: list[str],
+    files: tuple[str, ...] = (),
 ) -> Iterator[VersionRef]:
     """
     Итерируется по отфильтрованным ссылкам (refs) в Git-репозитории.
@@ -107,53 +105,46 @@ def get_refs(
     :return: Итератор с объектами VersionRef, представляющими отфильтрованные ссылки
     """
     for ref in _get_all_refs(gitroot):
-        if ref.source == "tags":
+        if ref.source == 'tags':
             if ref.name not in tag_whitelist:
                 logger.debug(
-                    "Skipping '%s' because tag '%s' doesn't match the "
-                    "whitelist pattern",
+                    "Skipping '%s' because tag '%s' doesn't match the whitelist pattern",
                     ref.refname,
                     ref.name,
                 )
                 continue
-        elif ref.source == "heads":
+        elif ref.source == 'heads':
             if ref.name not in branch_whitelist:
                 logger.debug(
-                    "Skipping '%s' because branch '%s' doesn't match the "
-                    "whitelist pattern",
+                    "Skipping '%s' because branch '%s' doesn't match the whitelist pattern",
                     ref.refname,
                     ref.name,
                 )
                 continue
         elif ref.is_remote and remote_whitelist is not None:
-            remote_name = ref.source.partition("/")[2]
+            remote_name = ref.source.partition('/')[2]
             if remote_name not in remote_whitelist:
                 logger.debug(
-                    "Skipping '%s' because remote '%s' doesn't match the "
-                    "whitelist pattern",
+                    "Skipping '%s' because remote '%s' doesn't match the whitelist pattern",
                     ref.refname,
                     remote_name,
                 )
                 continue
             if ref.name not in branch_whitelist:
                 logger.debug(
-                    "Skipping '%s' because branch '%s' doesn't match the "
-                    "whitelist pattern",
+                    "Skipping '%s' because branch '%s' doesn't match the whitelist pattern",
                     ref.refname,
                     ref.name,
                 )
                 continue
         else:
-            logger.debug(
-                "Skipping '%s' because its not a branch or tag", ref.refname
-            )
+            logger.debug("Skipping '%s' because its not a branch or tag", ref.refname)
             continue
 
         missing_files = [
             filename
             for filename in files
-            if filename != "."
-            and not _file_exists(gitroot, ref.refname, filename)
+            if filename != '.' and not _file_exists(gitroot, ref.refname, filename)
         ]
         if missing_files:
             logger.debug(
@@ -175,23 +166,21 @@ def _file_exists(gitroot: str, refname: str, filename: str) -> bool:
     :param filename: Имя файла
     :return: True, если файл существует, иначе False
     """
-    if os.sep != "/":
+    if os.sep != '/':
         # Git requires / path sep, make sure we use that
-        filename = filename.replace(os.sep, "/")
+        filename = filename.replace(os.sep, '/')
 
     cmd = (
-        "git",
-        "cat-file",
-        "-e",
-        f"{refname}:{filename}",
+        'git',
+        'cat-file',
+        '-e',
+        f'{refname}:{filename}',
     )
-    proc = subprocess.run(
-        cmd, cwd=gitroot, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    proc = subprocess.run(cmd, cwd=gitroot, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return proc.returncode == 0
 
 
-def copy_tree(gitroot: str, dst: str, reference: VersionRef, sourcepath: str = ".") -> None:
+def copy_tree(gitroot: str, dst: str, reference: VersionRef, sourcepath: str = '.') -> None:
     """
     Копирует содержимое указанной ссылки (ref) из Git-репозитория в целевую директорию.
 
@@ -202,19 +191,21 @@ def copy_tree(gitroot: str, dst: str, reference: VersionRef, sourcepath: str = "
     """
     with tempfile.SpooledTemporaryFile() as fp:
         cmd = (
-            "git",
-            "archive",
-            "--format",
-            "tar",
+            'git',
+            'archive',
+            '--format',
+            'tar',
             reference.commit,
-            "--",
+            '--',
             sourcepath,
         )
         try:
             subprocess.check_call(cmd, cwd=gitroot, stdout=fp, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as err:
-            errormsg = (f"Running {cmd} in {gitroot} resulted in following error:\n"
-                        f"{err.output.decode()}")
+            errormsg = (
+                f'Running {cmd} in {gitroot} resulted in following error:\n'
+                f'{err.output.decode()}'
+            )
             raise GitError(errormsg) from err
         fp.seek(0)
         with tarfile.TarFile(fileobj=fp) as tarfp:
