@@ -22,7 +22,6 @@ class VersionRef(NamedTuple):
 logger = logging.getLogger(__name__)
 
 
-
 def get_toplevel_path(cwd: str | None = None) -> str:
     """
     Возвращает путь к корневой директории Git-репозитория.
@@ -43,7 +42,7 @@ def get_toplevel_path(cwd: str | None = None) -> str:
         raise GitError(errormsg) from err
 
 
-def get_all_refs(gitroot: str) -> Iterator[VersionRef]:
+def _get_all_refs(gitroot: str) -> Iterator[VersionRef]:
     """
     Итерируется по ссылкам (ref) в Git-репозитории.
 
@@ -107,7 +106,7 @@ def get_refs(
     :param files: Кортеж обязательных файлов
     :return: Итератор с объектами VersionRef, представляющими отфильтрованные ссылки
     """
-    for ref in get_all_refs(gitroot):
+    for ref in _get_all_refs(gitroot):
         if ref.source == "tags":
             if ref.name not in tag_whitelist:
                 logger.debug(
@@ -154,7 +153,7 @@ def get_refs(
             filename
             for filename in files
             if filename != "."
-            and not file_exists(gitroot, ref.refname, filename)
+            and not _file_exists(gitroot, ref.refname, filename)
         ]
         if missing_files:
             logger.debug(
@@ -167,7 +166,7 @@ def get_refs(
         yield ref
 
 
-def file_exists(gitroot: str, refname: str, filename: str) -> bool:
+def _file_exists(gitroot: str, refname: str, filename: str) -> bool:
     """
     Проверяет, существует ли файл в указанной ссылке (ref) в Git-репозитории.
 
