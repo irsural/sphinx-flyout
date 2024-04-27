@@ -44,10 +44,10 @@ def get_toplevel_path(cwd: Path | None = None) -> Path:
 
 def _get_all_refs(gitroot: Path) -> Iterator[VersionRef]:
     """
-    Итерируется по ссылкам (ref) в Git-репозитории.
+    Итерируется по коммитам ссылок в Git-репозитории.
 
     :param gitroot: Путь к корневой директории Git-репозитория
-    :return: Ссылки Git-репозитория в формате VersionRef
+    :return: Ссылки Git-репозитория
     """
     cmd = (
         'git',
@@ -94,14 +94,21 @@ def get_refs(
     files: tuple[str | Path, ...] = (),
 ) -> Iterator[VersionRef]:
     """
-    Итерируется по отфильтрованным ссылкам (refs) в Git-репозитории.
+    Итерируется по списку из:
+
+    * Веток, указанных в branch_whitelist и существующих в репозитории
+    * Тегов, указанных в tag_whitelist и существующих в репозитории
+    * Удалённых ссылок, указанных в remote_whitelist и существующих в репозитории
+
+    Ссылка не добавляется в итоговую итерацию, если в ней нет хотя бы одного из
+    обязательных файлов.
 
     :param gitroot: Путь к корневой директории Git-репозитория
-    :param tag_whitelist: Список разрешенных тегов
-    :param branch_whitelist: Список разрешенных веток
-    :param remote_whitelist: Список разрешенных удаленных репозиториев
+    :param tag_whitelist: Список тегов
+    :param branch_whitelist: Список веток
+    :param remote_whitelist: Список удаленных ссылок
     :param files: Кортеж обязательных файлов
-    :return: Итератор с объектами VersionRef, представляющими отфильтрованные ссылки
+    :return: Ссылки на Git-репозиторий
     """
     for ref in _get_all_refs(gitroot):
         if ref.source == 'tags':
@@ -158,11 +165,11 @@ def get_refs(
 
 def _file_exists(gitroot: Path, refname: str, file: Path) -> bool:
     """
-    Проверяет, существует ли файл в указанной ссылке (ref) в Git-репозитории.
+    Проверяет, существует ли файл в коммите указанной ссылки (ref) Git-репозитория.
 
     :param gitroot: Путь к корневой директории Git-репозитория
     :param refname: Имя ссылки (ref)
-    :param filename: Имя файла
+    :param file: Путь до файла
     :return: True, если файл существует, иначе False
     """
     filename = file.as_posix()
@@ -179,12 +186,12 @@ def _file_exists(gitroot: Path, refname: str, file: Path) -> bool:
 
 def copy_tree(gitroot: Path, dst: Path, reference: VersionRef, sourcepath: str = '.') -> None:
     """
-    Копирует содержимое указанной ссылки (ref) из Git-репозитория в целевую директорию.
+    Копирует содержимое Git-репозитория по коммиту указанной ссылки (ref) в целевую директорию.
 
     :param gitroot: Путь к корневой директории Git-репозитория
     :param dst: Путь к целевой директории
-    :param reference: Объект VersionRef, представляющий ссылку (ref)
-    :param sourcepath: Путь к исходной директории (по умолчанию ".")
+    :param reference: Ссылка (ref)
+    :param sourcepath: Относительный путь к копируемой директории Git-репозитория
     """
     with tempfile.SpooledTemporaryFile() as fp:
         cmd = (
