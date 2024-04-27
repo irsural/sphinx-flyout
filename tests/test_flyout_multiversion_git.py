@@ -65,7 +65,7 @@ def test_get_all_refs(tmp_repo_path: Path) -> None:
     create_branch("test-branch")
     create_tag("test-tag")
 
-    refs = list(_get_all_refs(str(tmp_repo_path)))
+    refs = list(_get_all_refs(tmp_repo_path))
     assert len(refs) == 3
     assert any(ref.name == 'master' and ref.source == 'heads' for ref in refs)
     assert any(ref.name == 'test-branch' and ref.source == 'heads' for ref in refs)
@@ -81,13 +81,13 @@ class TestGetRefs:
         tag_whitelist = ['test-tag']
         branch_whitelist = ['test-branch']
         remote_whitelist: list[str] = []
-        refs = list(get_refs(str(tmp_repo_path), tag_whitelist, branch_whitelist, remote_whitelist))
+        refs = list(get_refs(tmp_repo_path, tag_whitelist, branch_whitelist, remote_whitelist))
         assert len(refs) == 2
         assert any(ref.name == 'test-branch' and ref.source == 'heads' for ref in refs)
         assert any(ref.name == 'test-tag' and ref.source == 'tags' for ref in refs)
 
     def test_get_refs_with_empty_repo(self, tmp_repo_path: Path) -> None:
-        refs = list(get_refs(str(tmp_repo_path), [], [], []))
+        refs = list(get_refs(tmp_repo_path, [], [], []))
         assert len(refs) == 0
 
 
@@ -97,11 +97,11 @@ class TestFileExists:
         add_files(["test-file"])
         create_commit()
 
-        assert _file_exists(str(tmp_repo_path), 'master', 'test-file')
-        assert not _file_exists(str(tmp_repo_path), 'master', 'nonexistent-file')
+        assert _file_exists(tmp_repo_path, 'master', Path('test-file'))
+        assert not _file_exists(tmp_repo_path, 'master', Path('nonexistent-file'))
 
     def test_file_exists_with_invalid_ref(self, tmp_repo_path: Path) -> None:
-        assert not _file_exists(str(tmp_repo_path), 'invalid-ref', 'test-file')
+        assert not _file_exists(tmp_repo_path, 'invalid-ref', Path('test-file'))
 
 
 class TestCopyTree:
@@ -123,7 +123,7 @@ class TestCopyTree:
 
         dst = tmp_path / 'dst'
         dst.mkdir()
-        copy_tree(str(tmp_repo_path), str(dst), version_ref)
+        copy_tree(tmp_repo_path, dst, version_ref)
 
         assert (dst / 'file1').read_text() == 'content1'
         assert (dst / 'file2').read_text() == 'content2'
@@ -149,7 +149,7 @@ class TestCopyTree:
         dst = tmp_path / 'dst'
         dst.mkdir()
 
-        copy_tree(str(tmp_repo_path), str(dst), version_ref, sourcepath='subdir')
+        copy_tree(tmp_repo_path, dst, version_ref, sourcepath='subdir')
 
         assert (dst / 'subdir' / 'file1').read_text() == 'content1'
         assert not (dst / 'file2').exists()
@@ -173,7 +173,7 @@ class TestCopyTree:
 
         dst = tmp_path / 'dst'
         dst.mkdir()
-        copy_tree(str(tmp_repo_path), str(dst), version_ref)
+        copy_tree(tmp_repo_path, dst, version_ref)
 
         assert (dst / 'file').read_text() == 'content'
         assert (dst / 'symlink').readlink() == (tmp_repo_path / 'file')
