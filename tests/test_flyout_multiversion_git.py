@@ -25,6 +25,29 @@ def tmp_repo_path(tmp_path: Path) -> Path:
     return tmp_repo_path
 
 
+def create_branch(branchname: str = "master") -> None:
+    subprocess.check_call(['git', 'branch', branchname])
+
+
+def create_tag(tagname: str = "release") -> None: 
+    subprocess.check_call(['git', 'tag', tagname])
+    
+    
+def create_init_commit() -> None:
+    subprocess.check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
+    
+    
+def add_files(files: list[str | Path]) -> None:
+    subprocess.check_call(['git', 'add', *files])
+    
+    
+def create_commit(message: str = "Added test files") -> None:
+    subprocess.check_call(['git', 'commit', '-m', message])
+
+
+def get_commit_hash() -> str:
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+
 class TestGetToplevelPath:
     def test_get_toplevel_path(self, tmp_repo_path: Path) -> None:
         assert get_toplevel_path() == str(tmp_repo_path)
@@ -38,9 +61,9 @@ class TestGetToplevelPath:
 
 
 def test_get_all_refs(tmp_repo_path: Path) -> None:
-    subprocess.check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
-    subprocess.check_call(['git', 'branch', 'test-branch'])
-    subprocess.check_call(['git', 'tag', 'test-tag'])
+    create_init_commit()
+    create_branch("test-branch")
+    create_tag("test-tag")
 
     refs = list(_get_all_refs(str(tmp_repo_path)))
     assert len(refs) == 3
@@ -51,9 +74,9 @@ def test_get_all_refs(tmp_repo_path: Path) -> None:
 
 class TestGetRefs:
     def test_get_refs(self, tmp_repo_path: Path) -> None:
-        subprocess.check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
-        subprocess.check_call(['git', 'branch', 'test-branch'])
-        subprocess.check_call(['git', 'tag', 'test-tag'])
+        create_init_commit()
+        create_branch('test-branch')
+        create_tag('test-tag')
 
         tag_whitelist = ['test-tag']
         branch_whitelist = ['test-branch']
@@ -71,8 +94,8 @@ class TestGetRefs:
 class TestFileExists:
     def test_file_exists(self, tmp_repo_path: Path) -> None:
         (tmp_repo_path / 'test-file').write_text('test content')
-        subprocess.check_call(['git', 'add', 'test-file'])
-        subprocess.check_call(['git', 'commit', '-m', 'Add test file'])
+        add_files(["test-file"])
+        create_commit()
 
         assert _file_exists(str(tmp_repo_path), 'master', 'test-file')
         assert not _file_exists(str(tmp_repo_path), 'master', 'nonexistent-file')
@@ -85,10 +108,10 @@ class TestCopyTree:
     def test_copy_tree(self, tmp_repo_path: Path, tmp_path: Path) -> None:
         (tmp_repo_path / 'file1').write_text('content1')
         (tmp_repo_path / 'file2').write_text('content2')
-        subprocess.check_call(['git', 'add', 'file1', 'file2'])
-        subprocess.check_call(['git', 'commit', '-m', 'Add test files'])
+        add_files(['file1', 'file2'])
+        create_commit()
 
-        commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        commit_hash = get_commit_hash()
         version_ref = VersionRef(
             name='master',
             commit=commit_hash,
@@ -110,10 +133,10 @@ class TestCopyTree:
         sub.mkdir()
         (sub / 'file1').write_text('content1')
         (tmp_repo_path / 'file2').write_text('content2')
-        subprocess.check_call(['git', 'add', 'subdir/file1', 'file2'])
-        subprocess.check_call(['git', 'commit', '-m', 'Add test files'])
+        add_files(['subdir/file1', 'file2'])
+        create_commit()
 
-        commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        commit_hash = get_commit_hash()
         version_ref = VersionRef(
             name='master',
             commit=commit_hash,
@@ -135,10 +158,10 @@ class TestCopyTree:
         file = tmp_repo_path / 'file'
         file.write_text('content')
         os.symlink(file, tmp_repo_path / 'symlink')
-        subprocess.check_call(['git', 'add', 'file', 'symlink'])
-        subprocess.check_call(['git', 'commit', '-m', 'Add file and symlink'])
+        add_files(["symlink"])
+        create_commit('Add file and symlink')
 
-        commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        commit_hash = get_commit_hash()
         version_ref = VersionRef(
             name='master',
             commit=commit_hash,
