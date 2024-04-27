@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 import subprocess
 import tarfile
@@ -43,7 +42,7 @@ def get_toplevel_path(cwd: Path | None = None) -> Path:
         raise GitError(errormsg) from err
 
 
-def _get_all_refs(gitroot: str) -> Iterator[VersionRef]:
+def _get_all_refs(gitroot: Path) -> Iterator[VersionRef]:
     """
     Итерируется по ссылкам (ref) в Git-репозитории.
 
@@ -88,11 +87,11 @@ def _get_all_refs(gitroot: str) -> Iterator[VersionRef]:
 
 
 def get_refs(
-    gitroot: str,
+    gitroot: Path,
     tag_whitelist: list[str],
     branch_whitelist: list[str],
     remote_whitelist: list[str],
-    files: tuple[str, ...] = (),
+    files: tuple[str | Path, ...] = (),
 ) -> Iterator[VersionRef]:
     """
     Итерируется по отфильтрованным ссылкам (refs) в Git-репозитории.
@@ -144,7 +143,7 @@ def get_refs(
         missing_files = [
             filename
             for filename in files
-            if filename != '.' and not _file_exists(gitroot, ref.refname, filename)
+            if filename != '.' and not _file_exists(gitroot, ref.refname, Path(filename))
         ]
         if missing_files:
             logger.debug(
@@ -157,7 +156,7 @@ def get_refs(
         yield ref
 
 
-def _file_exists(gitroot: str, refname: str, filename: str) -> bool:
+def _file_exists(gitroot: Path, refname: str, file: Path) -> bool:
     """
     Проверяет, существует ли файл в указанной ссылке (ref) в Git-репозитории.
 
@@ -166,9 +165,7 @@ def _file_exists(gitroot: str, refname: str, filename: str) -> bool:
     :param filename: Имя файла
     :return: True, если файл существует, иначе False
     """
-    if os.sep != '/':
-        # Git requires / path sep, make sure we use that
-        filename = filename.replace(os.sep, '/')
+    filename = file.as_posix()
 
     cmd = (
         'git',
@@ -180,7 +177,7 @@ def _file_exists(gitroot: str, refname: str, filename: str) -> bool:
     return proc.returncode == 0
 
 
-def copy_tree(gitroot: str, dst: str, reference: VersionRef, sourcepath: str = '.') -> None:
+def copy_tree(gitroot: Path, dst: Path, reference: VersionRef, sourcepath: str = '.') -> None:
     """
     Копирует содержимое указанной ссылки (ref) из Git-репозитория в целевую директорию.
 
