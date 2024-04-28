@@ -54,7 +54,7 @@ def add_flyout_to_context(
     try:
         if app.config.html_theme != 'sphinx_rtd_theme':
             logger.warning(
-                'Тема %s не поддерживается. Пожалуйста, ' "используйте 'sphinx_rtd_theme'",
+                "Тема %s не поддерживается. Пожалуйста, используйте 'sphinx_rtd_theme'",
                 app.config.html_theme,
             )
             return

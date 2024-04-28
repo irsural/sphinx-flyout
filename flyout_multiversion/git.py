@@ -59,9 +59,7 @@ def _get_all_refs(gitroot: Path) -> Iterator[VersionRef]:
     try:
         output = subprocess.check_output(cmd, cwd=gitroot, stderr=subprocess.STDOUT).decode()
     except subprocess.CalledProcessError as err:
-        errormsg = (
-            f'Running {cmd} in {gitroot} resulted in following error:\n{err.output.decode()}'
-        )
+        errormsg = f'Running {cmd} in {gitroot} resulted in following error:\n{err.output.decode()}'
         raise GitError(errormsg) from err
     for line in output.splitlines():
         is_remote = False
