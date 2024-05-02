@@ -51,7 +51,7 @@ def get_commit_hash() -> str:
 
 class TestGetToplevelPath:
     def test_get_toplevel_path(self, tmp_repo_path: Path) -> None:
-        assert get_toplevel_path() == str(tmp_repo_path)
+        assert get_toplevel_path() == tmp_repo_path
 
     def test_get_toplevel_path_with_no_tmp_repo_path(self, tmp_path: Path) -> None:
         path = tmp_path / 'no_repo_dir'
