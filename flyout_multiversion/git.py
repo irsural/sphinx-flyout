@@ -89,7 +89,7 @@ def get_refs(
     tag_whitelist: list[str],
     branch_whitelist: list[str],
     remote_whitelist: list[str],
-    files: tuple[str | Path, ...] = (),
+    files: tuple[Path, ...] = (),
 ) -> Iterator[VersionRef]:
     """
     Итерируется по списку из:
@@ -148,7 +148,7 @@ def get_refs(
         missing_files = [
             filename
             for filename in files
-            if filename != '.' and not _file_exists(gitroot, ref.refname, Path(filename))
+            if filename != Path('.') and not _file_exists(gitroot, ref.refname, Path(filename))
         ]
         if missing_files:
             logger.debug(
