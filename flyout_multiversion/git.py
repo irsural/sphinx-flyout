@@ -105,7 +105,7 @@ def get_refs(
     :param tag_whitelist: Список тегов
     :param branch_whitelist: Список веток
     :param remote_whitelist: Список удаленных ссылок
-    :param files: Кортеж обязательных файлов
+    :param files: Кортеж обязательных для ветки/тега файлов
     :return: Ссылки на Git-репозиторий
     """
     for ref in _get_all_refs(gitroot):
