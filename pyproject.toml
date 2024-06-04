@@ -12,10 +12,18 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
 dependencies = [
-    "sphinx",
-    "docutils",
-    "setuptools",
+    'Sphinx',
+    'docutils',
+    'setuptools',
+]
+[project.optional-dependencies]
+dev = [
+    'pytest==7.1.2',
+    'ruff==0.3.0',
+    'mypy==1.8.0',
+    'mypy-extensions==1.0.0'
 ]
 [build-system]
 requires = ["setuptools"]
@@ -24,12 +32,14 @@ build-backend = "setuptools.build_meta"
 [project.urls]
 Homepage = "https://github.com/irsural/sphinx-flyout"
 
+
 [tool.ruff]
 preview = true
 line-length = 100
 indent-width = 4
 exclude = [
     "docs",
+    "venv",
 ]
 
 [tool.ruff.lint]
@@ -69,6 +79,6 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["sphinx_flyout", "flyout_multiversion"]
+[tool.mypy]
+files = "sphinx_flyout/*.py,flyout_multiversion/*.py,tests/*.py"
+strict = "True"
