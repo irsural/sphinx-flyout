@@ -22,6 +22,8 @@ def tmp_repo_path(tmp_path: Path) -> Path:
     tmp_repo_path.mkdir()
     os.chdir(tmp_repo_path)
     subprocess.check_call(['git', 'init'])
+    subprocess.check_call(['git', 'config', 'user.email', '"test@run.ner'])
+    subprocess.check_call(['git', 'config', 'user.name', '"test_runner'])
     return tmp_repo_path
 
 
@@ -159,7 +161,7 @@ class TestCopyTree:
         file = tmp_repo_path / 'file'
         file.write_text('content')
         os.symlink(file, tmp_repo_path / 'symlink')
-        add_files(['symlink'])
+        add_files(['file', 'symlink'])
         create_commit('Add file and symlink')
 
         commit_hash = get_commit_hash()
