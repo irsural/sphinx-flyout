@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup(app: Sphinx) -> None:
-    app.add_config_value('sphinx_flyout_current_version', '', 'html', None)
+    app.add_config_value('sphinx_flyout_current_version', '', 'html')
     app.add_config_value('sphinx_flyout_host', '', 'html', str)
     app.add_config_value('sphinx_flyout_repository_link', '', 'html', str)
     app.add_config_value('sphinx_flyout_tags', [], 'html', list)
