@@ -116,18 +116,18 @@ def main(argv: list[str] | None = None) -> int:
         argv = sys.argv[1:]
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('sourcedir', help='path to documentation source files')
-    parser.add_argument('outputdir', help='path to output directory')
+    parser.add_argument('sourcedir', help='Путь до исходных файлов документации')
+    parser.add_argument('outputdir', help='Путь до папки с готовым')
     parser.add_argument(
         'filenames',
         nargs='*',
-        help='a list of specific files to rebuild. Ignored if -a is specified',
+        help='Список файлов для пересборки. Игнорируется при указании -a',
     )
     parser.add_argument(
         '-c',
         metavar='PATH',
         dest='confdir',
-        help=('path where configuration file (conf.py) is located ' '(default: same as SOURCEDIR)'),
+        help='Путь до конфигурационного файла (conf.py). По умолчанию - тот же, что и SOURCEDIR)',
     )
     parser.add_argument(
         '-D',
@@ -135,12 +135,12 @@ def main(argv: list[str] | None = None) -> int:
         action='append',
         dest='define',
         default=[],
-        help='override a setting in configuration file',
+        help='Переопределение параметров конфигурационного файла',
     )
     parser.add_argument(
         '--dump-metadata',
         action='store_true',
-        help='dump generated metadata and exit',
+        help='Сохранить метаданные и выйти',
     )
     args, argv = parser.parse_known_args(argv)
 
@@ -195,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
                 git.copy_tree(gitroot, repopath, gitref)
             except (OSError, CalledProcessError):
                 logger.error(
-                    'Failed to copy git tree for %s to %s',
+                    'Не удалось скопировать %s в %s',
                     gitref.refname,
                     repopath,
                 )
@@ -207,7 +207,7 @@ def main(argv: list[str] | None = None) -> int:
                 current_config = load_sphinx_config(str(confpath), confoverrides)
             except (OSError, ConfigError):
                 logger.error(
-                    'Failed load config for %s from %s',
+                    'Ошибка загрузки конфигурации %s из %s',
                     gitref.refname,
                     confpath,
                 )
@@ -237,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if not metadata:
-            logger.error('No matching refs found!')
+            logger.error('Не найдено подходящих веток и тэгов')
             return 2
 
         # Write Metadata
@@ -263,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
                 data['outputdir'],
                 *args.filenames,
             ])
-            logger.debug('Running sphinx-build with args: %r', current_argv)
+            logger.debug('Запуск sphinx-build %r', current_argv)
             cmd = (
                 sys.executable,
                 *get_python_flags(),
