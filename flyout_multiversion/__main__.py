@@ -116,18 +116,18 @@ def main(argv: list[str] | None = None) -> int:
         argv = sys.argv[1:]
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('sourcedir', help='path to documentation source files')
-    parser.add_argument('outputdir', help='path to output directory')
+    parser.add_argument('sourcedir', help='Путь до исходных файлов документации')
+    parser.add_argument('outputdir', help='Путь до папки с готовым')
     parser.add_argument(
         'filenames',
         nargs='*',
-        help='a list of specific files to rebuild. Ignored if -a is specified',
+        help='Список файлов для пересборки. Игнорируется при указании -a',
     )
     parser.add_argument(
         '-c',
         metavar='PATH',
         dest='confdir',
-        help=('path where configuration file (conf.py) is located ' '(default: same as SOURCEDIR)'),
+        help='Путь до конфигурационного файла (conf.py). По умолчанию - тот же, что и SOURCEDIR)',
     )
     parser.add_argument(
         '-D',
@@ -135,12 +135,12 @@ def main(argv: list[str] | None = None) -> int:
         action='append',
         dest='define',
         default=[],
-        help='override a setting in configuration file',
+        help='Переопределение параметров конфигурационного файла',
     )
     parser.add_argument(
         '--dump-metadata',
         action='store_true',
-        help='dump generated metadata and exit',
+        help='Сохранить метаданные и выйти',
     )
     args, argv = parser.parse_known_args(argv)
 
@@ -149,16 +149,16 @@ def main(argv: list[str] | None = None) -> int:
         os.path.abspath(args.confdir) if args.confdir is not None else sourcedir_absolute
     )
 
-    # Conf-overrides
+    # Переопределение конфигурационных данных
     confoverrides = {}
     for d in args.define:
         key, _, value = d.partition('=')
         confoverrides[key] = value
 
-    # Parse config
+    # Парсинг конфига
     config = load_sphinx_config(confdir_absolute, confoverrides, add_defaults=True)
 
-    # Get relative paths to root of git repository
+    # Получение относительных путей относительно корня git-репозитория
     gitroot = Path(git.get_toplevel_path(cwd=sourcedir_absolute)).resolve()
 
     logger.debug('Git toplevel path: %s', str(gitroot))
@@ -169,7 +169,7 @@ def main(argv: list[str] | None = None) -> int:
     logger.debug('Conf dir (relative to git toplevel path): %s', str(confdir))
     conffile = Path(confdir, 'conf.py')
 
-    # Get git references
+    # Получение веток и тегов Git
     gitrefs = git.get_refs(
         gitroot,
         config.fmv_tag_whitelist,
@@ -185,29 +185,29 @@ def main(argv: list[str] | None = None) -> int:
         gitref_list = sorted(gitrefs, key=lambda x: (x.is_remote, *x))
 
     with TemporaryDirectory() as tmp:
-        # Generate Metadata
+        # Генерация метаданных
         metadata = {}
         outputdirs = set()
         for gitref in gitref_list:
-            # Clone Git repo
+            # Клонирование Git-репозитория
             repopath = Path(tmp, gitref.commit)
             try:
                 git.copy_tree(gitroot, repopath, gitref)
             except (OSError, CalledProcessError):
                 logger.error(
-                    'Failed to copy git tree for %s to %s',
+                    'Не удалось скопировать %s в %s',
                     gitref.refname,
                     repopath,
                 )
                 continue
 
-            # Find config
+            # Поиск файла конфигурации
             confpath = repopath / confdir
             try:
                 current_config = load_sphinx_config(str(confpath), confoverrides)
             except (OSError, ConfigError):
                 logger.error(
-                    'Failed load config for %s from %s',
+                    'Ошибка загрузки конфигурации %s из %s',
                     gitref.refname,
                     confpath,
                 )
@@ -237,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if not metadata:
-            logger.error('No matching refs found!')
+            logger.error('Не найдено подходящих веток и тэгов')
             return 2
 
         # Write Metadata
@@ -263,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
                 data['outputdir'],
                 *args.filenames,
             ])
-            logger.debug('Running sphinx-build with args: %r', current_argv)
+            logger.debug('Запуск sphinx-build %r', current_argv)
             cmd = (
                 sys.executable,
                 *get_python_flags(),

@@ -110,11 +110,11 @@ def html_page_context(
         context['html_theme'] = app.config.html_theme
         if app.config.html_theme != 'sphinx_rtd_theme':
             logger.warning(
-                'Тема %s не поддерживается. Пожалуйста, ' "используйте 'sphinx_rtd_theme'",
+                "Тема %s не поддерживается. Пожалуйста, используйте 'sphinx_rtd_theme'",
                 app.config.html_theme,
             )
             return
-        logger.info('Writing flyout to %s', pagename)
+        logger.debug('Добавляется flyout в %s', pagename)
 
     except Exception as e:
         errormsg = f'Не удалось добавить flyout: {e}'
