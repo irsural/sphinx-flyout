@@ -6,7 +6,6 @@ import sys
 from contextlib import contextmanager
 from itertools import chain
 from logging import getLogger
-from multiprocessing import Process, Queue
 from pathlib import Path
 from string import Template
 from subprocess import CalledProcessError, check_call
@@ -32,60 +31,40 @@ def working_dir(path: str) -> Iterator[Never]:
         os.chdir(prev_cwd)
 
 
-def load_sphinx_config_worker(
-    q: 'Queue[Config | Exception]', confpath: str, confoverrides: dict[str, Any], add_defaults: bool
-) -> None:
-    try:
-        with working_dir(confpath):
-            current_config = Config.read(
-                confpath,
-                confoverrides,
-            )
-
-        if add_defaults:
-            current_config.add('fmv_tag_whitelist', _sphinx.DEFAULT_REF_WHITELIST, 'html', str)
-            current_config.add(
-                'fmv_branch_whitelist',
-                _sphinx.DEFAULT_REF_WHITELIST,
-                'html',
-                str,
-            )
-            current_config.add(
-                'fmv_remote_whitelist',
-                _sphinx.DEFAULT_REMOTE_WHITELIST,
-                'html',
-                str,
-            )
-            current_config.add(
-                'fmv_released_pattern',
-                _sphinx.DEFAULT_RELEASED_PATTERN,
-                'html',
-                str,
-            )
-            current_config.add('fmv_prefer_remote_refs', False, 'html', bool)
-        current_config.pre_init_values()
-        current_config.init_values()
-    except Exception as err:
-        q.put(err)
-        return
-
-    q.put(current_config)
-
-
 def load_sphinx_config(
     confpath: str, confoverrides: dict[str, Any], add_defaults: bool = False
 ) -> Config:
-    q: 'Queue[Config | Exception]' = Queue()
-    proc = Process(
-        target=load_sphinx_config_worker,
-        args=(q, confpath, confoverrides, add_defaults),
-    )
-    proc.start()
-    proc.join()
-    result = q.get_nowait()
-    if isinstance(result, Exception):
-        raise result
-    return result
+    with working_dir(confpath):
+        current_config = Config.read(
+            confpath,
+            confoverrides,
+        )
+
+    if add_defaults:
+        current_config.add('fmv_tag_whitelist', _sphinx.DEFAULT_REF_WHITELIST, 'html', str)
+        current_config.add(
+            'fmv_branch_whitelist',
+            _sphinx.DEFAULT_REF_WHITELIST,
+            'html',
+            str,
+        )
+        current_config.add(
+            'fmv_remote_whitelist',
+            _sphinx.DEFAULT_REMOTE_WHITELIST,
+            'html',
+            str,
+        )
+        current_config.add(
+            'fmv_released_pattern',
+            _sphinx.DEFAULT_RELEASED_PATTERN,
+            'html',
+            str,
+        )
+        current_config.add('fmv_prefer_remote_refs', False, 'html', bool)
+    current_config.pre_init_values()
+    current_config.init_values()
+
+    return current_config
 
 
 def get_python_flags() -> list[str]:
