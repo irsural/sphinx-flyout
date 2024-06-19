@@ -202,7 +202,7 @@ def main(argv: list[str] | None = None) -> int:
         gitref_list = sorted(gitrefs, key=lambda x: (not x.is_remote, *x))
     else:
         gitref_list = sorted(gitrefs, key=lambda x: (x.is_remote, *x))
-
+    logger.error(gitref_list)
     with TemporaryDirectory() as tmp:
         # Generate Metadata
         metadata = {}

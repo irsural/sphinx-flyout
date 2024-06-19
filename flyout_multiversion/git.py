@@ -21,8 +21,9 @@ GitRef = collections.namedtuple(
 )
 
 logger = logging.getLogger(__name__)
-
-
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+logger.addHandler(ch)
 def get_toplevel_path(cwd: str = "") -> str:
     cmd = (
         "git",
@@ -76,6 +77,7 @@ def get_refs(
         remote_whitelist: list[str],
         files: tuple[str, ...] = ()
 ) -> Generator[GitRef, None, None]:
+    logger.debug(subprocess.check_output(["pip", "freeze"]).decode())
     for ref in get_all_refs(gitroot):
         if ref.source == "tags":
             if ref.name not in tag_whitelist:
@@ -90,9 +92,10 @@ def get_refs(
             if ref.name not in branch_whitelist:
                 logger.debug(
                     "Skipping '%s' because branch '%s' doesn't match the "
-                    "whitelist pattern",
+                    "whitelist pattern %s",
                     ref.refname,
                     ref.name,
+                    branch_whitelist,
                 )
                 continue
         elif ref.is_remote and remote_whitelist is not None:
