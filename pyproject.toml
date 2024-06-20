@@ -74,4 +74,4 @@ line-ending = "auto"
 
 [tool.setuptools.packages.find]
 where = ["."]
-packages = ["sphinx_flyout"]
+include = ["flyout_multiversion"]
