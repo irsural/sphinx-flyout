@@ -1,0 +1,39 @@
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> {{ header }}</span>
+      v: {{ current_version }}
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      {% if versions.branches %}
+      <dl>
+        <dt>Ветки</dt>
+        {% for branch in versions.branches %}
+          <dd><a href="{{ branch.url }}">{{ branch.name }}</a></dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      {% if tags %}
+      <dl>
+        <dt>Тэги</dt>
+        {% for tag in versions.tags %}
+          <dd><a href="{{ tag.url }}">{{ tag.name }}</a></dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      {% if downloads %}
+      <dl>
+        <dt>Загрузки</dt>
+        {% for slug, url in downloads.items() %}
+          <dd><a href="{{ url }}">{{ slug }}</a></dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      {% if repository_link %}
+      <dl>
+        <dt>Репозиторий</dt>
+          <dd><a href="{{ repository_link }}">Посмотреть</a></dd>
+      </dl>
+      {% endif %}
+   </div>
+  </div>
