@@ -27,6 +27,19 @@ Version = collections.namedtuple(
         'release',
     ],
 )
+def setup(app: Sphinx) -> None:
+    app.add_config_value('fmv_flyout_host', '', 'html', str)
+    app.add_config_value('fmv_flyout_repository', '', 'html', str)
+    app.add_config_value('fmv_flyout_downloads', [], 'html', list)
+    app.add_config_value('fmv_metadata', {}, 'html')
+    app.add_config_value('fmv_metadata_path', '', 'html')
+    app.add_config_value('fmv_current_version', '', 'html')
+    app.add_config_value('fmv_latest_version', 'master', 'html')
+    app.add_config_value('fmv_flyout_branch_list', DEFAULT_REF_WHITELIST, 'html')
+    app.add_config_value('fmv_flyout_tag_list', DEFAULT_REF_WHITELIST, 'html')
+
+    app.connect('config-inited', _add_config_values)
+    app.connect('html-page-context', html_page_context)
 
 
 class VersionInfo:
@@ -137,20 +150,3 @@ def _check_config_values(config: Config) -> None:
         if not config[value]:
             errormsg = f'Параметр {value} не найден в конфигурационном файле'
             raise ConfigError(errormsg)
-
-
-def setup(app: Sphinx) -> None:
-    app.add_config_value('fmv_flyout_host', '', 'html', str)
-    app.add_config_value('fmv_flyout_repository', '', 'html', str)
-    app.add_config_value('fmv_flyout_downloads', [], 'html', list)
-    app.add_config_value('fmv_metadata', {}, 'html')
-    app.add_config_value('fmv_metadata_path', '', 'html')
-    app.add_config_value('fmv_current_version', '', 'html')
-    app.add_config_value('fmv_latest_version', 'master', 'html')
-    app.add_config_value('fmv_tag_whitelist', DEFAULT_REF_WHITELIST, 'html')
-    app.add_config_value('fmv_branch_whitelist', DEFAULT_REF_WHITELIST, 'html')
-    app.add_config_value('fmv_flyout_branch_list', DEFAULT_REF_WHITELIST, 'html')
-    app.add_config_value('fmv_flyout_tag_list', DEFAULT_REF_WHITELIST, 'html')
-
-    app.connect('config-inited', _add_config_values)
-    app.connect('html-page-context', html_page_context)
