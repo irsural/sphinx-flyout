@@ -19,14 +19,8 @@ logger.setLevel(logging.DEBUG)
 
 DATE_FMT = '%Y-%m-%d %H:%M:%S %z'
 Version = collections.namedtuple(
-    'Version',
-    [
-        'name',
-        'url',
-        'version',
-        'release',
-    ],
-)
+
+
 def setup(app: Sphinx) -> None:
     app.add_config_value('fmv_flyout_host', '', 'html', str)
     app.add_config_value('fmv_flyout_repository', '', 'html', str)
@@ -40,6 +34,13 @@ def setup(app: Sphinx) -> None:
 
     app.connect('config-inited', _add_config_values)
     app.connect('html-page-context', html_page_context)
+
+
+class Version(NamedTuple):
+    name: str
+    url: str
+    version: str
+    release: str
 
 
 class VersionInfo:
