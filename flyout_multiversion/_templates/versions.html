@@ -5,18 +5,18 @@
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
-      {% if versions.branches %}
+      {% if branches %}
       <dl>
         <dt>Ветки</dt>
-        {% for branch in versions.branches %}
+        {% for branch in branches %}
           <dd><a href="{{ branch.url }}">{{ branch.name }}</a></dd>
         {% endfor %}
       </dl>
       {% endif %}
-      {% if versions.tags %}
+      {% if tags %}
       <dl>
         <dt>Тэги</dt>
-        {% for tag in versions.tags %}
+        {% for tag in tags %}
           <dd><a href="{{ tag.url }}">{{ tag.name }}</a></dd>
         {% endfor %}
       </dl>
