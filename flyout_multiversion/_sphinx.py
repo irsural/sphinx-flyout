@@ -19,21 +19,6 @@ logger.setLevel(logging.DEBUG)
 DATE_FMT: Final = '%Y-%m-%d %H:%M:%S %z'
 
 
-def setup(app: Sphinx) -> None:
-    app.add_config_value('fmv_flyout_host', '', 'html', str)
-    app.add_config_value('fmv_flyout_repository', '', 'html', str)
-    app.add_config_value('fmv_flyout_downloads', [], 'html', list)
-    app.add_config_value('fmv_metadata', {}, 'html')
-    app.add_config_value('fmv_metadata_path', '', 'html')
-    app.add_config_value('fmv_current_version', '', 'html')
-    app.add_config_value('fmv_latest_version', 'master', 'html')
-    app.add_config_value('fmv_flyout_branch_list', DEFAULT_REF_WHITELIST, 'html')
-    app.add_config_value('fmv_flyout_tag_list', DEFAULT_REF_WHITELIST, 'html')
-
-    app.connect('config-inited', _add_config_values)
-    app.connect('html-page-context', html_page_context)
-
-
 class Version(NamedTuple):
     name: str
     url: str
@@ -79,6 +64,21 @@ class VersionInfo:
         if v:
             return self._dict_to_versionobj(v)
         return None
+
+
+def setup(app: Sphinx) -> None:
+    app.add_config_value('fmv_flyout_host', '', 'html', str)
+    app.add_config_value('fmv_flyout_repository', '', 'html', str)
+    app.add_config_value('fmv_flyout_downloads', [], 'html', list)
+    app.add_config_value('fmv_metadata', {}, 'html')
+    app.add_config_value('fmv_metadata_path', '', 'html')
+    app.add_config_value('fmv_current_version', '', 'html')
+    app.add_config_value('fmv_latest_version', 'master', 'html')
+    app.add_config_value('fmv_flyout_branch_list', DEFAULT_REF_WHITELIST, 'html')
+    app.add_config_value('fmv_flyout_tag_list', DEFAULT_REF_WHITELIST, 'html')
+
+    app.connect('config-inited', _add_config_values)
+    app.connect('html-page-context', html_page_context)
 
 
 def html_page_context(
