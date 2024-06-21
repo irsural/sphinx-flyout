@@ -2,6 +2,7 @@
 Расширение Sphinx, содержащее функциональность для интеграции информации о версиях документации
 и создания flyout меню с этой информацией.
 """
+
 import logging
 from pathlib import Path
 from typing import Any, Final, NamedTuple
