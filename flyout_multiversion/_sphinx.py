@@ -53,17 +53,13 @@ class VersionInfo:
     @property
     def tags(self) -> list[Version]:
         return [
-            self._dict_to_versionobj(v)
-            for v in self.metadata.values()
-            if v["source"] == "tags"
+            self._dict_to_versionobj(v) for v in self.metadata.values() if v['source'] == 'tags'
         ]
 
     @property
     def branches(self) -> list[Version]:
         return [
-            self._dict_to_versionobj(v)
-            for v in self.metadata.values()
-            if v["source"] != "tags"
+            self._dict_to_versionobj(v) for v in self.metadata.values() if v['source'] != 'tags'
         ]
 
     def __getitem__(self, name: str) -> Version | None:
