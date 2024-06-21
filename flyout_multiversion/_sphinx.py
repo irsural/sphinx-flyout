@@ -2,11 +2,9 @@
 Расширение Sphinx, содержащее функциональность для интеграции информации о версиях документации
 и создания flyout меню с этой информацией.
 """
-
-import collections
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Final, NamedTuple
 
 from sphinx.application import Sphinx
 from sphinx.config import Config
@@ -17,8 +15,7 @@ DEFAULT_REF_WHITELIST: list[str] = ['master']
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-DATE_FMT = '%Y-%m-%d %H:%M:%S %z'
-Version = collections.namedtuple(
+DATE_FMT: Final = '%Y-%m-%d %H:%M:%S %z'
 
 
 def setup(app: Sphinx) -> None:
