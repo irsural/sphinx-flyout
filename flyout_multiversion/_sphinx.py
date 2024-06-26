@@ -42,15 +42,16 @@ def html_page_context(
     try:
         context['current_version'] = app.config.fmv_current_version
         host = _check_protocol(app.config['fmv_flyout_host'])
+        project_url = host + '/' + app.config['fmv_current_version']
         context['branches'] = {
-            name: host + '/branches/' + name for name in app.config.fmv_flyout_branch_list
+            name: f'{project_url}/branches/{name}' for name in app.config['fmv_flyout_branch_list']
         }
         context['tags'] = {
-            name: host + '/branches/' + name for name in app.config.fmv_flyout_tag_list
+            name: f'{project_url}/tags/{name}' for name in app.config['fmv_flyout_tag_list']
         }
         context['header'] = app.config['fmv_flyout_header']
         context['downloads'] = {
-            name: host + '/download/' + name for name in app.config['fmv_flyout_downloads']
+            name: f'{project_url}/download/{name}' for name in app.config['fmv_flyout_downloads']
         }
         context['repository_link'] = app.config['fmv_flyout_repository']
         theme = context['html_theme'] = app.config.html_theme
