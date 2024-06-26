@@ -40,7 +40,7 @@ def html_page_context(
     app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: None
 ) -> None:
     try:
-        context['current_version'] = app.config.fmv_current_version
+        context['current_version'] = app.config['fmv_current_version']
         host = _check_protocol(app.config['fmv_flyout_host'])
         project_url = host + '/' + app.config['fmv_current_version']
         context['branches'] = {
@@ -81,10 +81,10 @@ def _add_config_values(app: Sphinx, config: Config) -> None:
 
 
 def _check_config_values(config: Config) -> None:
-    necessary_values = [
+    required = [
         'fmv_flyout_host',
     ]
-    for value in necessary_values:
+    for value in required:
         if not config[value]:
             errormsg = f'Параметр {value} не найден в конфигурационном файле'
             raise ConfigError(errormsg)
