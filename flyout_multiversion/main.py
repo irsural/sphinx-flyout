@@ -312,6 +312,7 @@ def main(argv: list[str] | None = None) -> int:
                     "SPHINX_MULTIVERSION_CONFDIR": data["confdir"],
                 }
             )
+            logger.error("Something is wring in %s", check_call(("ls", "-R", data["sourcedir"])))
             check_call(cmd, cwd=data["basedir"], env=env)
 
     return 0
