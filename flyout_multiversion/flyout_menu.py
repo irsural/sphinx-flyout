@@ -4,6 +4,7 @@
 """
 
 import logging
+import subprocess
 from pathlib import Path
 from typing import Any, Final, NamedTuple
 
@@ -28,7 +29,6 @@ def setup(app: Sphinx) -> None:
     app.add_config_value('fmv_flyout_host', '', 'html', str)
     app.add_config_value('fmv_flyout_repository', '', 'html', str)
     app.add_config_value('fmv_flyout_downloads', [], 'html', list)
-    app.add_config_value('fmv_current_version', '', 'html')
     app.add_config_value('fmv_flyout_branch_list', DEFAULT_REF_WHITELIST, 'html')
     app.add_config_value('fmv_flyout_tag_list', DEFAULT_REF_WHITELIST, 'html')
 
@@ -40,7 +40,9 @@ def html_page_context(
     app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: None
 ) -> None:
     try:
-        context['current_version'] = app.config['fmv_current_version']
+        context['current_version'] = (
+            subprocess.check_output(['git', 'branch', '--show-current']).decode().strip()
+        )
         host = _check_protocol(app.config['fmv_flyout_host'])
         project_url = host + '/' + app.config['fmv_current_version']
         context['branches'] = {
