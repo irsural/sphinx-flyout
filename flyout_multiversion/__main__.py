@@ -21,10 +21,7 @@ logger = getLogger(__name__)
 def load_sphinx_config(
     confpath: str, confoverrides: Dict[str, Any], add_defaults: bool = False
 ) -> Config:
-
-    current_config = Config.read(
-            confpath,
-            confoverrides)
+    current_config = Config.read(confpath, confoverrides)
 
     if add_defaults:
         current_config.add('fmv_tag_build_list', [], 'html', str)
