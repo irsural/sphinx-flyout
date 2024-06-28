@@ -32,7 +32,10 @@ def setup(app: Sphinx) -> None:
     app.add_config_value('fmv_flyout_downloads', [], 'html', list)
     app.add_config_value('fmv_flyout_branch_list', DEFAULT_REF_WHITELIST, 'html')
     app.add_config_value('fmv_flyout_tag_list', DEFAULT_REF_WHITELIST, 'html')
-
+    # fmv_flyout_header добавляется в _add_config_values
+    # чтобы указать app.config.project в качестве значения по умолчанию, т.к.
+    # до события config-inited app.config.project = Python,
+    # а setup происходит раньше чем config-inited
     app.connect('config-inited', _add_config_values)
     app.connect('html-page-context', html_page_context)
 
