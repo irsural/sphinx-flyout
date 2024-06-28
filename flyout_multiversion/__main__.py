@@ -1,7 +1,6 @@
 import argparse
 import json
 import os
-import re
 import sys
 from itertools import chain
 from logging import getLogger
@@ -9,7 +8,7 @@ from pathlib import Path
 from string import Template
 from subprocess import CalledProcessError, check_call
 from tempfile import TemporaryDirectory
-from typing import Any
+from typing import Any, Dict, List, Tuple, Union
 
 from sphinx.config import Config
 from sphinx.errors import ConfigError
@@ -20,7 +19,7 @@ logger = getLogger(__name__)
 
 
 def load_sphinx_config(
-    confpath: str, confoverrides: dict[str, Any], add_defaults: bool = False
+    confpath: str, confoverrides: Dict[str, Any], add_defaults: bool = False
 ) -> Config:
 
     current_config = Config.read(
@@ -41,8 +40,8 @@ def load_sphinx_config(
     return current_config
 
 
-def get_python_flags() -> list[str]:
-    flags: list[tuple[str, int] | tuple[str, ...]] = [
+def get_python_flags() -> List[str]:
+    flags: List[Union[Tuple[str, int], Tuple[str, ...]]] = [
         ('-b', sys.flags.bytes_warning),
         ('-d', sys.flags.debug),
         ('-R', sys.flags.hash_randomization),
@@ -64,7 +63,7 @@ def get_python_flags() -> list[str]:
     return [flag for flag, enabled in flags if enabled]
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: Union[List[str], None] = None) -> int:
     if not argv:
         argv = sys.argv[1:]
 

@@ -55,9 +55,8 @@ def setup(app: Sphinx) -> None:
 
 
 def html_page_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: None
+    app: Sphinx, pagename: str, templatename: str, context: Dict[str, Any], doctree: None
 ) -> None:
-
     _update_flyout_menu(app.config)
     try:
         theme = app.config.html_theme
