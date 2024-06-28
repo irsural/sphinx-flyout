@@ -41,10 +41,10 @@ def load_sphinx_config(
         )
 
     if add_defaults:
-        current_config.add('fmv_tag_whitelist', _sphinx.DEFAULT_REF_WHITELIST, 'html', str)
+        current_config.add('fmv_tag_build_list', [], 'html', str)
         current_config.add(
-            'fmv_branch_whitelist',
-            _sphinx.DEFAULT_REF_WHITELIST,
+            'fmv_branch_build_list',
+            flyout_menu.DEFAULT_REF_WHITELIST,
             'html',
             str,
         )
@@ -151,9 +151,9 @@ def main(argv: list[str] | None = None) -> int:
     # Получение веток и тегов Git
     gitrefs = git.get_refs(
         gitroot,
-        config.fmv_tag_whitelist,
-        config.fmv_branch_whitelist,
         config.fmv_remote_whitelist,
+        config.fmv_tag_build_list,
+        config.fmv_branch_build_list,
         files=(Path(sourcedir), conffile),
     )
 

@@ -86,9 +86,8 @@ def _get_all_refs(gitroot: Path) -> Iterator[VersionRef]:
 
 def get_refs(
     gitroot: Path,
-    tag_whitelist: list[str],
-    branch_whitelist: list[str],
-    remote_whitelist: list[str],
+    tag_build_list: list[str],
+    branch_build_list: list[str],
     files: tuple[Path, ...] = (),
 ) -> Iterator[VersionRef]:
     """
@@ -102,15 +101,14 @@ def get_refs(
     обязательных файлов.
 
     :param gitroot: Путь к корневой директории Git-репозитория
-    :param tag_whitelist: Список тегов
-    :param branch_whitelist: Список веток
-    :param remote_whitelist: Список удаленных ссылок
+    :param tag_build_list: Список тегов
+    :param branch_build_list: Список веток
     :param files: Кортеж обязательных для ветки/тега файлов
     :return: Ссылки на Git-репозиторий
     """
     for ref in _get_all_refs(gitroot):
         if ref.source == 'tags':
-            if ref.name not in tag_whitelist:
+            if ref.name not in tag_build_list:
                 logger.debug(
                     "Skipping '%s' because tag '%s' doesn't match the whitelist pattern",
                     ref.refname,
@@ -118,7 +116,7 @@ def get_refs(
                 )
                 continue
         elif ref.source == 'heads':
-            if ref.name not in branch_whitelist:
+            if ref.name not in branch_build_list:
                 logger.debug(
                     "Skipping '%s' because branch '%s' doesn't match the whitelist pattern",
                     ref.refname,
