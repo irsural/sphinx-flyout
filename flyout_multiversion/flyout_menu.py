@@ -47,19 +47,19 @@ def html_page_context(
         context['current_version'] = (
             subprocess.check_output(['git', 'branch', '--show-current']).decode().strip()
         )
-        host = _check_protocol(app.config['fmv_flyout_host'])
-        project_url = host + '/' + quote(app.config['project'])
+        host = _check_protocol(app.config.fmv_flyout_host)
+        project_url = host + '/' + quote(app.config.project)
         context['branches'] = {
-            name: f'{project_url}/branches/{name}' for name in app.config['fmv_flyout_branch_list']
+            name: f'{project_url}/branches/{name}' for name in app.config.fmv_flyout_branch_list
         }
         context['tags'] = {
-            name: f'{project_url}/tags/{name}' for name in app.config['fmv_flyout_tag_list']
+            name: f'{project_url}/tags/{name}' for name in app.config.fmv_flyout_tag_list
         }
-        context['header'] = app.config['fmv_flyout_header']
+        context['header'] = app.config.fmv_flyout_header
         context['downloads'] = {
-            name: f'{project_url}/download/{name}' for name in app.config['fmv_flyout_downloads']
+            name: f'{project_url}/download/{name}' for name in app.config.fmv_flyout_downloads
         }
-        context['repository_link'] = app.config['fmv_flyout_repository']
+        context['repository_link'] = app.config.fmv_flyout_repository
         theme = context['html_theme'] = app.config.html_theme
         if theme != 'sphinx_rtd_theme':
             logger.warning(
