@@ -123,22 +123,6 @@ def get_refs(
                     ref.name,
                 )
                 continue
-        elif ref.is_remote and remote_whitelist is not None:
-            remote_name = ref.source.partition('/')[2]
-            if remote_name not in remote_whitelist:
-                logger.debug(
-                    "Skipping '%s' because remote '%s' doesn't match the whitelist pattern",
-                    ref.refname,
-                    remote_name,
-                )
-                continue
-            if ref.name not in branch_whitelist:
-                logger.debug(
-                    "Skipping '%s' because branch '%s' doesn't match the whitelist pattern",
-                    ref.refname,
-                    ref.name,
-                )
-                continue
         else:
             logger.debug("Skipping '%s' because its not a branch or tag", ref.refname)
             continue

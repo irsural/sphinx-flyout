@@ -3,42 +3,29 @@ import json
 import os
 import re
 import sys
-from contextlib import contextmanager
 from itertools import chain
 from logging import getLogger
 from pathlib import Path
 from string import Template
 from subprocess import CalledProcessError, check_call
 from tempfile import TemporaryDirectory
-from typing import Any, Iterator
+from typing import Any
 
 from sphinx.config import Config
 from sphinx.errors import ConfigError
-from typing_extensions import Never
 
 from flyout_multiversion import _sphinx, git
 
 logger = getLogger(__name__)
 
 
-@contextmanager
-def working_dir(path: str) -> Iterator[Never]:
-    prev_cwd = os.getcwd()
-    os.chdir(path)
-    try:
-        yield  # type: ignore[misc]
-    finally:
-        os.chdir(prev_cwd)
-
-
 def load_sphinx_config(
     confpath: str, confoverrides: dict[str, Any], add_defaults: bool = False
 ) -> Config:
-    with working_dir(confpath):
-        current_config = Config.read(
+
+    current_config = Config.read(
             confpath,
-            confoverrides,
-        )
+            confoverrides)
 
     if add_defaults:
         current_config.add('fmv_tag_build_list', [], 'html', str)
@@ -48,19 +35,6 @@ def load_sphinx_config(
             'html',
             str,
         )
-        current_config.add(
-            'fmv_remote_whitelist',
-            _sphinx.DEFAULT_REMOTE_WHITELIST,
-            'html',
-            str,
-        )
-        current_config.add(
-            'fmv_released_pattern',
-            _sphinx.DEFAULT_RELEASED_PATTERN,
-            'html',
-            str,
-        )
-        current_config.add('fmv_prefer_remote_refs', False, 'html', bool)
     current_config.pre_init_values()
     current_config.init_values()
 
@@ -151,22 +125,16 @@ def main(argv: list[str] | None = None) -> int:
     # Получение веток и тегов Git
     gitrefs = git.get_refs(
         gitroot,
-        config.fmv_remote_whitelist,
         config.fmv_tag_build_list,
         config.fmv_branch_build_list,
         files=(Path(sourcedir), conffile),
     )
 
-    # Order git refs
-    if config.fmv_prefer_remote_refs:
-        gitref_list = sorted(gitrefs, key=lambda x: (not x.is_remote, *x))
-    else:
-        gitref_list = sorted(gitrefs, key=lambda x: (x.is_remote, *x))
+    gitref_list = sorted(gitrefs, key=lambda x: (not x.is_remote, *x))
 
     with TemporaryDirectory() as tmp:
         # Генерация метаданных
         metadata = {}
-        outputdirs = set()
         for gitref in gitref_list:
             # Клонирование Git-репозитория
             repopath = Path(tmp, gitref.commit)
@@ -192,9 +160,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 continue
 
-            # Ensure that there are not duplicate output dirs
-            outputdir = f'{gitref.source}/{gitref.name}'
-            outputdirs.add(outputdir)
+            outputdir = f'{"branches" if gitref.source == "heads" else "tags"}/{gitref.name}'
 
             current_sourcedir = os.path.join(repopath, sourcedir)
             metadata[gitref.name] = {
@@ -202,7 +168,6 @@ def main(argv: list[str] | None = None) -> int:
                 'version': current_config.version,
                 'release': current_config.release,
                 'rst_prolog': current_config.rst_prolog,
-                'is_released': bool(re.match(config.fmv_released_pattern, gitref.refname)),
                 'source': gitref.source,
                 'creatordate': gitref.creatordate.strftime(_sphinx.DATE_FMT),
                 'basedir': repopath,
@@ -250,17 +215,7 @@ def main(argv: list[str] | None = None) -> int:
                 'sphinx',
                 *current_argv,
             )
-            env = os.environ.copy()
-            env.update({
-                'SPHINX_MULTIVERSION_NAME': data['name'],
-                'SPHINX_MULTIVERSION_VERSION': data['version'],
-                'SPHINX_MULTIVERSION_RELEASE': data['release'],
-                'SPHINX_MULTIVERSION_SOURCEDIR': data['sourcedir'],
-                'SPHINX_MULTIVERSION_OUTPUTDIR': data['outputdir'],
-                'SPHINX_MULTIVERSION_CONFDIR': data['confdir'],
-            })
-            check_call(cmd, cwd=data['basedir'], env=env)
-
+            check_call(cmd, cwd=data['basedir'])
     return 0
 
 
