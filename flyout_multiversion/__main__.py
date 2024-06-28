@@ -14,7 +14,7 @@ from typing import Any
 from sphinx.config import Config
 from sphinx.errors import ConfigError
 
-from flyout_multiversion import _sphinx, git
+from flyout_multiversion import flyout_menu, git
 
 logger = getLogger(__name__)
 
@@ -169,11 +169,11 @@ def main(argv: list[str] | None = None) -> int:
                 'release': current_config.release,
                 'rst_prolog': current_config.rst_prolog,
                 'source': gitref.source,
-                'creatordate': gitref.creatordate.strftime(_sphinx.DATE_FMT),
-                'basedir': repopath,
+                'creatordate': gitref.creatordate.strftime(flyout_menu.DATE_FMT),
+                'basedir': str(repopath),
                 'sourcedir': current_sourcedir,
                 'outputdir': os.path.join(os.path.abspath(args.outputdir), outputdir),
-                'confdir': confpath,
+                'confdir': str(confpath),
             }
 
         if args.dump_metadata:
