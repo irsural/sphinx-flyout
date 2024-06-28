@@ -48,7 +48,7 @@ def html_page_context(
             subprocess.check_output(['git', 'branch', '--show-current']).decode().strip()
         )
         host = _check_protocol(app.config['fmv_flyout_host'])
-        project_url = host + '/' + quote(app.config['fmv_flyout_header'])
+        project_url = host + '/' + quote(app.config['project'])
         context['branches'] = {
             name: f'{project_url}/branches/{name}' for name in app.config['fmv_flyout_branch_list']
         }
