@@ -66,7 +66,7 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     parser = argparse.ArgumentParser()
     parser.add_argument('sourcedir', help='Путь до исходных файлов документации')
-    parser.add_argument('outputdir', help='Путь до папки с готовым')
+    parser.add_argument('outputdir', help='Путь до папки с готовым проектом')
     parser.add_argument(
         'filenames',
         nargs='*',
