@@ -6,14 +6,15 @@
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, Final, NamedTuple
+from typing import Any, Dict, List, NamedTuple
+from typing_extensions import Final
 from urllib.parse import quote
 
 from sphinx.application import Sphinx
 from sphinx.config import Config
 from sphinx.errors import ConfigError
 
-DEFAULT_REF_WHITELIST: Final[list[str]] = ['master']
+DEFAULT_REF_WHITELIST: Final[List[str]] = ['master']
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

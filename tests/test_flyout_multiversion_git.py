@@ -1,7 +1,8 @@
 import os
-import subprocess
 from datetime import datetime
 from pathlib import Path
+from subprocess import check_call, check_output
+from typing import Sequence, Union
 
 import pytest
 
@@ -21,34 +22,34 @@ def tmp_repo_path(tmp_path: Path) -> Path:
     tmp_repo_path = tmp_path / 'repo'
     tmp_repo_path.mkdir()
     os.chdir(tmp_repo_path)
-    subprocess.check_call(['git', 'init'])
-    subprocess.check_call(['git', 'config', 'user.email', '"test@run.ner'])
-    subprocess.check_call(['git', 'config', 'user.name', '"test_runner'])
+    check_call(['git', 'init'])
+    check_call(['git', 'config', 'user.email', '"test@run.ner'])
+    check_call(['git', 'config', 'user.name', '"test_runner'])
     return tmp_repo_path
 
 
 def create_branch(branchname: str = 'master') -> None:
-    subprocess.check_call(['git', 'branch', branchname])
+    check_call(['git', 'branch', branchname])
 
 
 def create_tag(tagname: str = 'release') -> None:
-    subprocess.check_call(['git', 'tag', tagname])
+    check_call(['git', 'tag', tagname])
 
 
 def create_init_commit() -> None:
-    subprocess.check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
+    check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
 
 
-def add_files(files: list[str | Path]) -> None:
-    subprocess.check_call(['git', 'add', *files])
+def add_files(files: Sequence[Union[str, Path]]) -> None:
+    check_call(['git', 'add', *files])
 
 
 def create_commit(message: str = 'Added test files') -> None:
-    subprocess.check_call(['git', 'commit', '-m', message])
+    check_call(['git', 'commit', '-m', message])
 
 
 def get_commit_hash() -> str:
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+    return check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
 
 
 class TestGetToplevelPath:
@@ -83,14 +84,19 @@ class TestGetRefs:
 
         tag_whitelist = ['test-tag']
         branch_whitelist = ['test-branch']
-        remote_whitelist: list[str] = []
-        refs = list(get_refs(tmp_repo_path, tag_whitelist, branch_whitelist, remote_whitelist))
+        refs = list(get_refs(tmp_repo_path, tag_whitelist, branch_whitelist))
         assert len(refs) == 2
         assert any(ref.name == 'test-branch' and ref.source == 'heads' for ref in refs)
         assert any(ref.name == 'test-tag' and ref.source == 'tags' for ref in refs)
 
     def test_get_refs_with_empty_repo(self, tmp_repo_path: Path) -> None:
-        refs = list(get_refs(tmp_repo_path, [], [], []))
+        refs = list(
+            get_refs(
+                tmp_repo_path,
+                [],
+                [],
+            )
+        )
         assert len(refs) == 0
 
 
@@ -179,4 +185,5 @@ class TestCopyTree:
         copy_tree(tmp_repo_path, dst, version_ref)
 
         assert (dst / 'file').read_text() == 'content'
-        assert (dst / 'symlink').readlink() == (tmp_repo_path / 'file')
+        assert (dst / 'symlink').read_text() == 'content'
+        assert (dst / 'symlink').resolve() == (tmp_repo_path / 'file')

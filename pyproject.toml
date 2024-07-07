@@ -6,7 +6,7 @@ authors = [
 ]
 description = "Расширение для Sphinx для создания flyout-меню"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -17,12 +17,13 @@ dependencies = [
     'Sphinx',
     'docutils',
     'setuptools',
+    'sphinx-rtd-theme',
 ]
 [project.optional-dependencies]
 dev = [
-    'pytest==7.1.2',
-    'ruff==0.3.0',
-    'mypy==1.8.0',
+    'pytest==7.4.4',
+    'ruff==0.4.9',
+    'mypy==1.4.1',
     'mypy-extensions==1.0.0'
 ]
 [build-system]
@@ -74,6 +75,7 @@ select = [
 "__init__.py" = ["F401", "F403"]
 "examples/*" = ["T20"]
 "scripts/*" = ["T20"]
+"tests/*.py" = ["F401", "F811"]
 
 [tool.ruff.format]
 quote-style = "single"
