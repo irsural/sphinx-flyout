@@ -180,4 +180,5 @@ class TestCopyTree:
         copy_tree(tmp_repo_path, dst, version_ref)
 
         assert (dst / 'file').read_text() == 'content'
-        assert (dst / 'symlink').readlink() == (tmp_repo_path / 'file')
+        assert (dst / 'symlink').read_text() == 'content'
+        assert (dst / 'symlink').resolve() == (tmp_repo_path / 'file')
