@@ -17,6 +17,7 @@ dependencies = [
     'Sphinx',
     'docutils',
     'setuptools',
+    'sphinx-rtd-theme',
 ]
 [project.optional-dependencies]
 dev = [
