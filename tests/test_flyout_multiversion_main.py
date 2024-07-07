@@ -3,13 +3,13 @@ from pathlib import Path
 from subprocess import check_call
 from typing import List
 
-import pytest  # type: ignore[import-not-found]
-from test_flyout_multiversion_git import add_files, create_commit
+import pytest
+from test_flyout_multiversion_git import add_files, create_commit, tmp_repo_path
 
 from flyout_multiversion.__main__ import main as build_multiversion
 
 
-@pytest.fixture  # type: ignore[misc]
+@pytest.fixture
 def setup_sample_repo_with_refs(tmp_repo_path: Path, branches: List[str], tags: List[str]) -> Path:
     create_master(tmp_repo_path, branches, tags)
     for branch in branches:
@@ -26,7 +26,7 @@ def setup_sample_repo_with_refs(tmp_repo_path: Path, branches: List[str], tags: 
 def create_new_branch(branch: str) -> None:
     check_call(['git', 'checkout', '-b', branch])
     files = create_branch_files(branch)
-    add_files(files)  # type: ignore[arg-type]
+    add_files(files)
     create_commit('Added to ' + branch)
 
 
@@ -34,14 +34,12 @@ def create_new_tag(tag: str) -> None:
     with open(f'{tag}_file.rst', 'w', encoding='utf-8') as f:
         f.write(f'This file is associated with tag {tag}')
 
-    # Add and commit the new file
     add_files([f'{tag}_file.rst'])
     create_commit(f'Added file for tag {tag}')
     add_tag(tag)
 
 
 def create_post_tag_commit(tag: str, branch: str) -> None:
-    # Create a new file to differentiate the branch from the tag
     with open(f'post_tag_{tag}_on_{branch}_file.rst', 'w', encoding='utf-8') as f:
         f.write(f'This file is created after tagging {tag} on branch {branch}')
 
@@ -89,7 +87,7 @@ def create_branch_files(branch: str) -> List[str]:
     return ['index.rst', 'conf.py']
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     'branches,tags',
     [
         pytest.param(['dev', 'oppa'], ['v1', 'v2', 'v3'], id='branches and tags'),
