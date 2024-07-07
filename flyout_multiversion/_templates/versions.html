@@ -8,16 +8,16 @@
       {% if branches %}
       <dl>
         <dt>Ветки</dt>
-        {% for branch in branches %}
-          <dd><a href="{{ branch.url }}">{{ branch.name }}</a></dd>
+        {% for name, url in branches.items() %}
+          <dd><a href="{{ url }}">{{ name }}</a></dd>
         {% endfor %}
       </dl>
       {% endif %}
       {% if tags %}
       <dl>
         <dt>Тэги</dt>
-        {% for tag in tags %}
-          <dd><a href="{{ tag.url }}">{{ tag.name }}</a></dd>
+        {% for name, url in tags.items() %}
+          <dd><a href="{{ url }}">{{ name }}</a></dd>
         {% endfor %}
       </dl>
       {% endif %}
