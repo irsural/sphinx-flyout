@@ -2,9 +2,9 @@ import os
 from datetime import datetime
 from pathlib import Path
 from subprocess import check_call, check_output
-from typing import List, Union
+from typing import Sequence, Union
 
-import pytest
+import pytest  # type: ignore[import-not-found]
 
 from flyout_multiversion.errors import GitError
 from flyout_multiversion.git import (
@@ -17,7 +17,7 @@ from flyout_multiversion.git import (
 )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def tmp_repo_path(tmp_path: Path) -> Path:
     tmp_repo_path = tmp_path / 'repo'
     tmp_repo_path.mkdir()
@@ -40,7 +40,7 @@ def create_init_commit() -> None:
     check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
 
 
-def add_files(files: List[Union[str, Path]]) -> None:
+def add_files(files: Sequence[Union[str, Path]]) -> None:
     check_call(['git', 'add', *files])
 
 
