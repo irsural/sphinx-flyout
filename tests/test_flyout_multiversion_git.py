@@ -1,7 +1,9 @@
 import os
-import subprocess
+
 from datetime import datetime
 from pathlib import Path
+from subprocess import check_output, check_call
+from typing import List, Union
 
 import pytest
 
@@ -21,34 +23,34 @@ def tmp_repo_path(tmp_path: Path) -> Path:
     tmp_repo_path = tmp_path / 'repo'
     tmp_repo_path.mkdir()
     os.chdir(tmp_repo_path)
-    subprocess.check_call(['git', 'init'])
-    subprocess.check_call(['git', 'config', 'user.email', '"test@run.ner'])
-    subprocess.check_call(['git', 'config', 'user.name', '"test_runner'])
+    check_call(['git', 'init'])
+    check_call(['git', 'config', 'user.email', '"test@run.ner'])
+    check_call(['git', 'config', 'user.name', '"test_runner'])
     return tmp_repo_path
 
 
 def create_branch(branchname: str = 'master') -> None:
-    subprocess.check_call(['git', 'branch', branchname])
+    check_call(['git', 'branch', branchname])
 
 
 def create_tag(tagname: str = 'release') -> None:
-    subprocess.check_call(['git', 'tag', tagname])
+    check_call(['git', 'tag', tagname])
 
 
 def create_init_commit() -> None:
-    subprocess.check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
+    check_call(['git', 'commit', '--allow-empty', '-m', 'Initial commit'])
 
 
-def add_files(files: list[str | Path]) -> None:
-    subprocess.check_call(['git', 'add', *files])
+def add_files(files: List[Union[str, Path]]) -> None:
+    check_call(['git', 'add', *files])
 
 
 def create_commit(message: str = 'Added test files') -> None:
-    subprocess.check_call(['git', 'commit', '-m', message])
+    check_call(['git', 'commit', '-m', message])
 
 
 def get_commit_hash() -> str:
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+    return check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
 
 
 class TestGetToplevelPath:
