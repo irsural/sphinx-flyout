@@ -1,8 +1,7 @@
 import os
-
 from datetime import datetime
 from pathlib import Path
-from subprocess import check_output, check_call
+from subprocess import check_call, check_output
 from typing import List, Union
 
 import pytest
@@ -91,7 +90,13 @@ class TestGetRefs:
         assert any(ref.name == 'test-tag' and ref.source == 'tags' for ref in refs)
 
     def test_get_refs_with_empty_repo(self, tmp_repo_path: Path) -> None:
-        refs = list(get_refs(tmp_repo_path, [], [], ))
+        refs = list(
+            get_refs(
+                tmp_repo_path,
+                [],
+                [],
+            )
+        )
         assert len(refs) == 0
 
 
