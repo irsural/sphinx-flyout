@@ -11,7 +11,7 @@ test:
 	python3 -m pytest
 
 analyze:
-	python3 -m mypy
+	python3 -m mypy --config-file pyproject.toml
 
 lint:
 	python3 -m ruff check
