@@ -4,7 +4,7 @@ from pathlib import Path
 from subprocess import check_call, check_output
 from typing import Sequence, Union
 
-import pytest  # type: ignore[import-not-found]
+import pytest
 
 from flyout_multiversion.errors import GitError
 from flyout_multiversion.git import (
@@ -17,7 +17,7 @@ from flyout_multiversion.git import (
 )
 
 
-@pytest.fixture  # type: ignore[misc]
+@pytest.fixture
 def tmp_repo_path(tmp_path: Path) -> Path:
     tmp_repo_path = tmp_path / 'repo'
     tmp_repo_path.mkdir()
