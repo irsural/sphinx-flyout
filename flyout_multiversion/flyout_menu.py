@@ -8,7 +8,6 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple
-from typing_extensions import Final
 from urllib.parse import quote
 
 from sphinx.application import Sphinx
@@ -16,6 +15,7 @@ from sphinx.config import Config
 from sphinx.errors import ConfigError
 from sphinx.locale import _
 from sphinx.util import i18n
+from typing_extensions import Final
 
 DEFAULT_REF_WHITELIST: Final[List[str]] = ['master']
 

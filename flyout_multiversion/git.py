@@ -5,7 +5,7 @@ import tarfile
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Iterator, List, NamedTuple, Tuple,  Union
+from typing import Iterator, List, NamedTuple, Tuple, Union
 
 from flyout_multiversion.errors import GitError
 
