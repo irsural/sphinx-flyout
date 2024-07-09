@@ -93,7 +93,7 @@ def create_branch_files(branch: str) -> List[str]:
         pytest.param(['dev', 'oppa'], ['v1', 'v2', 'v3'], id='branches and tags'),
         pytest.param([], [], id='empty'),
         pytest.param(['br1', 'br2'], [], id='branches only'),
-        pytest.param([], ['tag1', 'tag2'], id='tags only'),
+        pytest.param([], ['tag1', 'ta.g2'], id='tags only'),
     ],
 )
 def test_build_multiversion(

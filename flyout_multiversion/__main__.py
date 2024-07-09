@@ -9,6 +9,7 @@ from string import Template
 from subprocess import CalledProcessError, check_call
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List, Tuple, Union
+from typing_extensions import Final
 
 from sphinx.config import Config
 from sphinx.errors import ConfigError
@@ -16,7 +17,7 @@ from sphinx.errors import ConfigError
 from flyout_multiversion import flyout_menu, git
 
 logger = getLogger(__name__)
-
+METADATA_PATH: Final = "/tmp/multiversion_metadata.json"
 
 def load_sphinx_config(
     confpath: str, confoverrides: Dict[str, Any], add_defaults: bool = False
@@ -181,12 +182,9 @@ def main(argv: Union[List[str], None] = None) -> int:
             return 2
 
         # Write Metadata
-        metadata_path = os.path.abspath(os.path.join(tmp, 'versions.json'))
-        with open(metadata_path, mode='w') as fp:
+        with open(METADATA_PATH, mode='w+') as fp:
             json.dump(metadata, fp, indent=2)
 
-        # Run Sphinx
-        argv.extend(['-D', f'fmv_metadata_path={metadata_path}'])
         for version_name, data in metadata.items():
             os.makedirs(data['outputdir'], exist_ok=True)
 

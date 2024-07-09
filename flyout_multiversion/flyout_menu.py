@@ -12,10 +12,11 @@ from urllib.parse import quote
 
 from sphinx.application import Sphinx
 from sphinx.config import Config
-from sphinx.errors import ConfigError
+from sphinx.errors import ConfigError, ExtensionError
 from sphinx.locale import _
 from sphinx.util import i18n
 from typing_extensions import Final
+from flyout_multiversion.__main__ import METADATA_PATH
 
 DEFAULT_REF_WHITELIST: Final[List[str]] = ['master']
 
@@ -36,8 +37,6 @@ def setup(app: Sphinx) -> None:
     app.add_config_value('fmv_flyout_downloads', [], 'html', list)
 
     app.add_config_value('fmv_current_version', '', 'html')
-    app.add_config_value('fmv_metadata', {}, 'html')
-    app.add_config_value('fmv_metadata_path', '', 'html')
     # flyout_tag_list и flyout_branch_list - списки уже собранных веток и тегов
     # они не собираются, ссылки на них просто добавляются в flyout
     app.add_config_value('fmv_flyout_branch_list', [], 'html')
@@ -99,20 +98,18 @@ def _update_flyout_menu(config: Config) -> None:
 
 
 def config_inited(app: Sphinx, config: Config) -> None:
-    if not config['fmv_metadata']:
-        if not config['fmv_metadata_path']:
-            return
-
-        with open(config['fmv_metadata_path']) as f:
+    try:
+        with open(METADATA_PATH) as f:
             metadata = json.load(f)
-
-        config['fmv_metadata'] = metadata
+    except FileNotFoundError as e:
+        msg = f"Не удалось загрузить файл метаданных {METADATA_PATH}"
+        raise ExtensionError(msg) from e
 
     if not config['fmv_current_version']:
         return
 
     try:
-        data = app.config.fmv_metadata[config.fmv_current_version]
+        data = metadata[config.fmv_current_version]
     except KeyError:
         return
 
