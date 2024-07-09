@@ -9,15 +9,16 @@ from string import Template
 from subprocess import CalledProcessError, check_call
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List, Tuple, Union
-from typing_extensions import Final
 
 from sphinx.config import Config
 from sphinx.errors import ConfigError
+from typing_extensions import Final
 
 from flyout_multiversion import flyout_menu, git
 
 logger = getLogger(__name__)
-METADATA_PATH: Final = "/tmp/multiversion_metadata.json"
+METADATA_PATH: Final = '/tmp/multiversion_metadata.json'
+
 
 def load_sphinx_config(
     confpath: str, confoverrides: Dict[str, Any], add_defaults: bool = False

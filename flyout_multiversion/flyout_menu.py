@@ -16,6 +16,7 @@ from sphinx.errors import ConfigError, ExtensionError
 from sphinx.locale import _
 from sphinx.util import i18n
 from typing_extensions import Final
+
 from flyout_multiversion.__main__ import METADATA_PATH
 
 DEFAULT_REF_WHITELIST: Final[List[str]] = ['master']
@@ -102,7 +103,7 @@ def config_inited(app: Sphinx, config: Config) -> None:
         with open(METADATA_PATH) as f:
             metadata = json.load(f)
     except FileNotFoundError as e:
-        msg = f"Не удалось загрузить файл метаданных {METADATA_PATH}"
+        msg = f'Не удалось загрузить файл метаданных {METADATA_PATH}'
         raise ExtensionError(msg) from e
 
     if not config['fmv_current_version']:
