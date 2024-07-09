@@ -5,7 +5,7 @@ import tarfile
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Iterator, NamedTuple
+from typing import Iterator, List, NamedTuple, Tuple, Union
 
 from flyout_multiversion.errors import GitError
 
@@ -22,7 +22,7 @@ class VersionRef(NamedTuple):
 logger = logging.getLogger(__name__)
 
 
-def get_toplevel_path(cwd: Path | None = None) -> Path:
+def get_toplevel_path(cwd: Union[Path, None] = None) -> Path:
     """
     Возвращает путь к корневой директории Git-репозитория.
 
@@ -86,10 +86,9 @@ def _get_all_refs(gitroot: Path) -> Iterator[VersionRef]:
 
 def get_refs(
     gitroot: Path,
-    tag_whitelist: list[str],
-    branch_whitelist: list[str],
-    remote_whitelist: list[str],
-    files: tuple[Path, ...] = (),
+    tag_build_list: List[str],
+    branch_build_list: List[str],
+    files: Tuple[Path, ...] = (),
 ) -> Iterator[VersionRef]:
     """
     Итерируется по списку из:
@@ -102,15 +101,14 @@ def get_refs(
     обязательных файлов.
 
     :param gitroot: Путь к корневой директории Git-репозитория
-    :param tag_whitelist: Список тегов
-    :param branch_whitelist: Список веток
-    :param remote_whitelist: Список удаленных ссылок
+    :param tag_build_list: Список тегов
+    :param branch_build_list: Список веток
     :param files: Кортеж обязательных для ветки/тега файлов
     :return: Ссылки на Git-репозиторий
     """
     for ref in _get_all_refs(gitroot):
         if ref.source == 'tags':
-            if ref.name not in tag_whitelist:
+            if ref.name not in tag_build_list:
                 logger.debug(
                     "Skipping '%s' because tag '%s' doesn't match the whitelist pattern",
                     ref.refname,
@@ -118,23 +116,7 @@ def get_refs(
                 )
                 continue
         elif ref.source == 'heads':
-            if ref.name not in branch_whitelist:
-                logger.debug(
-                    "Skipping '%s' because branch '%s' doesn't match the whitelist pattern",
-                    ref.refname,
-                    ref.name,
-                )
-                continue
-        elif ref.is_remote and remote_whitelist is not None:
-            remote_name = ref.source.partition('/')[2]
-            if remote_name not in remote_whitelist:
-                logger.debug(
-                    "Skipping '%s' because remote '%s' doesn't match the whitelist pattern",
-                    ref.refname,
-                    remote_name,
-                )
-                continue
-            if ref.name not in branch_whitelist:
+            if ref.name not in branch_build_list:
                 logger.debug(
                     "Skipping '%s' because branch '%s' doesn't match the whitelist pattern",
                     ref.refname,
