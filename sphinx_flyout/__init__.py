@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup(app: Sphinx) -> None:
-    app.add_config_value('sphinx_flyout_current_version', '', 'html')
+    app.add_config_value('sphinx_flyout_git_reference', _get_git_branch(app), 'html')
     app.add_config_value('sphinx_flyout_host', '', 'html', str)
     app.add_config_value('sphinx_flyout_repository_link', '', 'html', str)
     app.add_config_value('sphinx_flyout_tags', [], 'html', list)
@@ -32,7 +32,6 @@ def _check_config_values(app: Sphinx, config: Config) -> None:
 def _add_config_values(app: Sphinx, config: Config) -> None:
     config.templates_path.append(str(Path(__file__).parent / '_templates'))
     config.add('sphinx_flyout_header', app.config.project, 'html', str)
-    config['sphinx_flyout_current_version'] = _get_git_branch(app)
 
 
 def _get_git_branch(app: Sphinx) -> str:
@@ -45,7 +44,7 @@ def _get_git_branch(app: Sphinx) -> str:
         logger.warning(
             'Не удалось получить имя текущей ветки git: %s', process.stderr.decode('utf-8')
         )
-        return 'Unknown'
+        return ''
 
 
 def add_flyout_to_context(
@@ -59,7 +58,7 @@ def add_flyout_to_context(
             )
             return
         logger.info('Writing flyout to %s', pagename)
-        context['current_version'] = app.config.sphinx_flyout_current_version
+        context['current_version'] = app.config.sphinx_flyout_git_reference
         host = app.config.sphinx_flyout_host
         if not host.startswith(('http://', 'https://')):
             host = 'https://' + host
