@@ -6,13 +6,13 @@
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, NamedTuple
-from typing_extensions import Final
+from typing import Any, List, NamedTuple
 from urllib.parse import quote
 
 from sphinx.application import Sphinx
 from sphinx.config import Config
 from sphinx.errors import ConfigError
+from typing_extensions import Final
 
 DEFAULT_REF_WHITELIST: Final[List[str]] = ['master']
 

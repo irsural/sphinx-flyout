@@ -1,7 +1,7 @@
 import subprocess
 import urllib.parse
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from sphinx.application import Sphinx
 from sphinx.config import Config
@@ -48,7 +48,7 @@ def _get_git_branch(app: Sphinx) -> str:
 
 
 def add_flyout_to_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: Any
+    app: Sphinx, pagename: str, templatename: str, context: Dict[str, Any], doctree: Any
 ) -> None:
     try:
         if app.config.html_theme != 'sphinx_rtd_theme':
@@ -87,8 +87,8 @@ def add_flyout_to_context(
 
 
 def _make_links_relate_to_host(
-    host: str, project: str, section: str, links: list[str]
-) -> dict[str, str]:
+    host: str, project: str, section: str, links: List[str]
+) -> Dict[str, str]:
     new_links = {}
     for link in links:
         new_links[link] = f'{host}/{project}/{section}/{link}'
