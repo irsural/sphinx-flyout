@@ -1,9 +1,7 @@
 [project]
 name = "sphinx-flyout"
 version = "0.1"
-authors = [
-  { name="IRS Ural" },
-]
+authors = [{ name = "IRS Ural" }]
 description = "Расширение для Sphinx для создания flyout-меню"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -13,19 +11,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = [
-    'Sphinx',
-    'docutils',
-    'setuptools',
-    'sphinx-rtd-theme',
-]
+dependencies = ['Sphinx', 'docutils', 'setuptools', 'sphinx-rtd-theme']
 [project.optional-dependencies]
-dev = [
-    'pytest==7.4.4',
-    'ruff==0.4.9',
-    'mypy==1.4.1',
-    'mypy-extensions==1.0.0'
-]
+dev = ['pytest==7.4.4', 'ruff==0.4.9', 'mypy==1.4.1', 'mypy-extensions==1.0.0']
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
@@ -34,38 +22,35 @@ build-backend = "setuptools.build_meta"
 Homepage = "https://github.com/irsural/sphinx-flyout"
 
 [tool.setuptools]
-packages = ["flyout_multiversion","sphinx_flyout"]
+packages = ["flyout_multiversion", "sphinx_flyout"]
 
 [tool.ruff]
 preview = true
 line-length = 100
 indent-width = 4
-exclude = [
-    "docs",
-    "venv",
-]
+exclude = ["docs", "venv"]
 
 [tool.ruff.lint]
 select = [
-    "E", # pycodestyle errors
-    "W", # pycodestyle warnings
-    "F", # pyflakes
-    "I", # isort
-    "B", # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "C901", # flake8-complexity
-    "UP", # pyupgrade
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "C901",   # flake8-complexity
+    "UP",     # pyupgrade
     "RUF021", #  Parenthesize around `a and b` when chaining `and` and `or`
-    "ISC", # flakes-implicit-str-concat
-    "G", # flake8-logging-format
-    "PIE", # flake8-pie
-    "T20", # flake8-print
-    "SIM", # flake8-simplify
-    "TID", # flake8-tidy-imports
-    "INT", # flake8-gettext
-    "ERA", # flake8-eradicate
-    "EM", # flake8-errmsg
-#    "DTZ", # flake8-datetimez
+    "ISC",    # flakes-implicit-str-concat
+    "G",      # flake8-logging-format
+    "PIE",    # flake8-pie
+    "T20",    # flake8-print
+    "SIM",    # flake8-simplify
+    "TID",    # flake8-tidy-imports
+    "INT",    # flake8-gettext
+    "ERA",    # flake8-eradicate
+    "EM",     # flake8-errmsg
+    #    "DTZ", # flake8-datetimez
 ]
 #                   mod    mod    object
 #logger-objects = ["mylib.logger.logger"]
@@ -85,4 +70,4 @@ line-ending = "auto"
 
 [tool.mypy]
 files = "sphinx_flyout/*.py,flyout_multiversion/*.py,tests/*.py"
-strict = "True"
+strict = true

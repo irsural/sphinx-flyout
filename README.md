@@ -1,7 +1,7 @@
 # sphinx-flyout
 
 **sphinx-flyout** - это расширение [Sphinx](https://www.sphinx-doc.org/en/master/)
-для автоматической генерации [flyout-меню](https://docs.readthedocs.io/en/stable/flyout-menu.html) 
+для автоматической генерации [flyout-меню](https://docs.readthedocs.io/en/stable/flyout-menu.html)
 
 ## Использование
 
@@ -23,25 +23,29 @@ extensions = [
 
 ### Настройка
 
-У расширения есть 5 параметров, задаваемых переменными в **conf.py**.
+У расширения есть 7 параметров, задаваемых переменными в **conf.py**.
 
-#### ``sphinx_flyout_header``
+#### `sphinx_flyout_header`
 
 Заголовок меню. По умолчанию - название проекта **Sphinx**
 
-#### ``sphinx_flyout_repository_link``
+#### `sphinx_flyout_git_reference`
+
+Название версии git-репозитория. По умолчанию - текущая ветка
+
+#### `sphinx_flyout_repository_link`
 
 Строка со ссылкой на репозиторий проекта. По умолчанию пустая,
 а раздел **Репозиторий** не отображается
 
-#### ``sphinx_flyout_host``
+#### `sphinx_flyout_host`
 
-Ссылка на хостинг сайта. Автоматически вставляется в нижеупомянутые ссылки. 
+Ссылка на хостинг сайта. Автоматически вставляется в нижеупомянутые ссылки.
 Обязательный параметр
 
-#### ``sphinx_flyout_downloads``
+#### `sphinx_flyout_downloads`
 
-Список с форматами документации проекта, доступными для загрузки 
+Список с форматами документации проекта, доступными для загрузки
 (`html`, `pdf` и т.д.) .
 
 Во время работы расширения ссылки автоматически преобразуются в следующий формат:
@@ -50,7 +54,7 @@ extensions = [
 
 По умолчанию пуст, а раздел **Загрузки** не отображается
 
-#### ``sphinx_flyout_branches``
+#### `sphinx_flyout_branches`
 
 Список с названиями собранных веток проекта.
 
@@ -60,7 +64,7 @@ extensions = [
 
 По умолчанию пуст, а раздел **Ветки** не отображается
 
-#### ``sphinx_flyout_tags``
+#### `sphinx_flyout_tags`
 
 Список с названиями собранных тэгов проекта.
 
@@ -73,6 +77,7 @@ extensions = [
 ## Пример
 
 Содержимое **conf.py**:
+
 ```python
 sphinx_flyout_header = "My project"
 sphinx_flyout_repository_link = "https://gitea.example.com/my/project"
