@@ -84,19 +84,13 @@ class TestGetRefs:
 
         tag_whitelist = ['test-tag']
         branch_whitelist = ['test-branch']
-        refs = list(get_refs(tmp_repo_path, tag_whitelist, branch_whitelist))
+        refs = list(get_refs(tmp_repo_path, tag_whitelist, branch_whitelist, []))
         assert len(refs) == 2
         assert any(ref.name == 'test-branch' and ref.source == 'heads' for ref in refs)
         assert any(ref.name == 'test-tag' and ref.source == 'tags' for ref in refs)
 
     def test_get_refs_with_empty_repo(self, tmp_repo_path: Path) -> None:
-        refs = list(
-            get_refs(
-                tmp_repo_path,
-                [],
-                [],
-            )
-        )
+        refs = list(get_refs(tmp_repo_path, [], [], []))
         assert len(refs) == 0
 
 
