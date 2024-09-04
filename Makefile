@@ -21,3 +21,7 @@ format:
 	python3 -m ruff check --fix sphinx_flyout/*.py flyout_multiversion/*.py tests/*.py
 	python3 -m ruff format sphinx_flyout/*.py flyout_multiversion/*.py tests/*.py
 
+pypi_upload:
+	rm -rf dist
+	python3 -m build
+	python3 -m twine upload --verbose --repository gitea dist/*

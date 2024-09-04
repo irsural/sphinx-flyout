@@ -5,7 +5,7 @@ import tarfile
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Iterator, NamedTuple
+from typing import Iterator, List, NamedTuple, Tuple, Union
 
 from flyout_multiversion.errors import GitError
 
@@ -22,7 +22,7 @@ class VersionRef(NamedTuple):
 logger = logging.getLogger(__name__)
 
 
-def get_toplevel_path(cwd: Path | None = None) -> Path:
+def get_toplevel_path(cwd: Union[Path, None] = None) -> Path:
     """
     Возвращает путь к корневой директории Git-репозитория.
 
@@ -86,10 +86,10 @@ def _get_all_refs(gitroot: Path) -> Iterator[VersionRef]:
 
 def get_refs(
     gitroot: Path,
-    tag_whitelist: list[str],
-    branch_whitelist: list[str],
-    remote_whitelist: list[str],
-    files: tuple[Path, ...] = (),
+    tag_whitelist: List[str],
+    branch_whitelist: List[str],
+    remote_whitelist: List[str],
+    files: Tuple[Path, ...] = (),
 ) -> Iterator[VersionRef]:
     """
     Итерируется по списку из:
