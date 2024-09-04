@@ -21,8 +21,6 @@ build-backend = "setuptools.build_meta"
 [project.urls]
 Homepage = "https://github.com/irsural/sphinx-flyout"
 
-[tool.setuptools]
-packages = ["flyout_multiversion", "sphinx_flyout"]
 
 [tool.ruff]
 preview = true
@@ -65,9 +63,9 @@ select = [
 [tool.ruff.format]
 quote-style = "single"
 indent-style = "space"
-skip-magic-trailing-comma = false
+skip-magic-trailing-comma = true
 line-ending = "auto"
 
 [tool.mypy]
-files = "sphinx_flyout/*.py,flyout_multiversion/*.py,tests/*.py"
+files = "sphinx_flyout/*.py"
 strict = true
