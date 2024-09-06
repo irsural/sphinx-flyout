@@ -70,16 +70,10 @@ def add_flyout_to_context(
         if app.config.sphinx_flyout_repository_link:
             context['repository_link'] = app.config.sphinx_flyout_repository_link
         context['tags'] = _make_links_relate_to_host(
-            host,
-            project_url,
-            'tag',
-            app.config.sphinx_flyout_tags,
+            host, project_url, 'tag', app.config.sphinx_flyout_tags
         )
         context['branches'] = _make_links_relate_to_host(
-            host,
-            project_url,
-            'branch',
-            app.config.sphinx_flyout_branches,
+            host, project_url, 'branch', app.config.sphinx_flyout_branches
         )
     except Exception as e:
         errormsg = 'Не удалось добавить flyout'

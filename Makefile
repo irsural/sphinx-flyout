@@ -15,11 +15,11 @@ analyze:
 
 lint:
 	python3 -m ruff check
-	python3 -m ruff format sphinx_flyout/*.py flyout_multiversion/*.py tests/*.py --check
+	python3 -m ruff format sphinx_flyout/*.py  --check
 
 format:
-	python3 -m ruff check --fix sphinx_flyout/*.py flyout_multiversion/*.py tests/*.py
-	python3 -m ruff format sphinx_flyout/*.py flyout_multiversion/*.py tests/*.py
+	python3 -m ruff check --fix sphinx_flyout/*.py
+	python3 -m ruff format sphinx_flyout/*.py
 
 pypi_upload:
 	rm -rf dist
